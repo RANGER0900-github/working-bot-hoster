@@ -1,0 +1,13 @@
+
+./venv/bin/python bot.py
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 1409
+    venv_bin = os.path.join(str(self.user_dir), 'venv', 'bin', 'pip')
+IndentationError: expected an indented block after 'try' statement on line 1407
+                                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads/working-bot-hoster]
+└─$ cd ~/Downloads/working-bot-hoster
+./venv/bin/python bot.py
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 1867
+    label = getattr(item, 'default_label', getattr(item, 'label', ''))
+IndentationError: expected an indented block after 'if' statement on line 1865
+                                                                                

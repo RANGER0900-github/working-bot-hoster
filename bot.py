@@ -22,7 +22,7 @@ COOL_TAGLINE = "⚡ UnitedNodes • Instant Discord bot hosting with style"
 
 # Import our modules
 from config import (
-    DISCORD_TOKEN, GUILD_ID, OPENROUTER_API_KEY, EMOJIS, EMBED_COLORS,
+    DISCORD_TOKEN, GUILD_ID, EMOJIS, EMBED_COLORS,
     get_user_root_dir, validate_config,
     SESSION_TIMEOUT, MAX_CONSOLE_OUTPUT_LENGTH, MAX_BOTS_PER_USER
 )
@@ -30,7 +30,10 @@ from logger_setup import setup_logging, get_logger
 from file_handler import FileHandler
 from session_manager import SessionManager
 from code_executor import CodeExecutor
-from security import SecurityChecker
+from gemini_client import (
+    get_user_api_key, set_user_api_key, has_user_api_key,
+    generate_bot_files, check_for_error, fix_bot_errors, scan_code_for_security
+)
 
 # Set up logging
 setup_logging()
@@ -69,7 +72,6 @@ if not is_valid:
 file_handler = FileHandler()
 session_manager = SessionManager(session_timeout=SESSION_TIMEOUT)
 code_executor = CodeExecutor()
-security_checker = SecurityChecker(OPENROUTER_API_KEY)
 http_client: Optional[aiohttp.ClientSession] = None
 
 # Bot setup
@@ -142,11 +144,110 @@ async def _presence_update_loop():
     except asyncio.CancelledError:
         logger.info("Presence update loop cancelled.")
         raise
+# ============ API Key Entry Classes ============ #
+
+class GeminiApiKeyModal(discord.ui.Modal, title="🔑 Enter Gemini API Key"):
+    """Modal for entering Gemini API key."""
+    
+    api_key_input = discord.ui.TextInput(
+        label="Gemini API Key",
+        placeholder="Enter your Google AI Studio API key here...",
+        style=discord.TextStyle.short,
+        required=True,
+        min_length=10,
+        max_length=100
+    )
+    
+    def __init__(self, callback_command: str = "host"):
+        super().__init__(timeout=300)
+        self.callback_command = callback_command
+    
+    async def on_submit(self, interaction: discord.Interaction):
+        user_id = interaction.user.id
+        api_key = self.api_key_input.value.strip()
+        
+        # Save the API key
+        if set_user_api_key(user_id, api_key):
+            embed = discord.Embed(
+                title=f"{EMOJIS['safe']} API Key Saved!",
+                description=(
+                    "Your Gemini API key has been saved successfully.\n\n"
+                    f"You can now use `/{self.callback_command}` command!"
+                ),
+                color=EMBED_COLORS['success']
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        else:
+            embed = discord.Embed(
+                title=f"{EMOJIS['danger']} Failed to Save",
+                description="Could not save your API key. Please try again.",
+                color=EMBED_COLORS['error']
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+class ApiKeyRequiredView(discord.ui.View):
+    """View shown when user needs to enter their API key."""
+    
+    def __init__(self, callback_command: str = "host"):
+        super().__init__(timeout=300)
+        self.callback_command = callback_command
+        
+        # Add link button to Google AI Studio
+        self.add_item(discord.ui.Button(
+            label="🔗 Get API Key",
+            url="https://aistudio.google.com/apikey",
+            style=discord.ButtonStyle.link
+        ))
+    
+    @discord.ui.button(label="🔑 Enter API Key", style=discord.ButtonStyle.primary)
+    async def enter_api_key(self, interaction: discord.Interaction, button: discord.ui.Button):
+        modal = GeminiApiKeyModal(self.callback_command)
+        await interaction.response.send_modal(modal)
+
+
+async def check_user_api_key(interaction: discord.Interaction, command_name: str = "host") -> Optional[str]:
+    """
+    Check if user has an API key. If not, show the API key entry prompt.
+    Returns the API key if available, None otherwise.
+    """
+    user_id = interaction.user.id
+    api_key = get_user_api_key(user_id)
+    
+    if api_key:
+        return api_key
+    
+    # No API key - show prompt
+    embed = discord.Embed(
+        title=f"{EMOJIS['warning']} API Key Required",
+        description=(
+            "To use the Bot Hoster, you need to enter your **Google AI Studio API key**.\n\n"
+            "**How to get your free API key:**\n"
+            "1. Click the **Get API Key** button below\n"
+            "2. Sign in with your Google account\n"
+            "3. Create a new API key\n"
+            "4. Copy the key and click **Enter API Key**\n\n"
+            "Your key is stored securely and used only for AI features."
+        ),
+        color=EMBED_COLORS['warning']
+    )
+    embed.set_footer(text="Google AI Studio provides 60 requests/min for free!")
+    
+    view = ApiKeyRequiredView(command_name)
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    return None
+
+
 @bot.tree.command(name="host", description="🚀 Host your Discord bot on our server!")
 async def host_command(interaction: discord.Interaction):
     """Command to start hosting a Discord bot."""
     try:
         logger.info(f"Host command invoked by user {interaction.user.id}")
+        
+        # Check for API key first
+        api_key = await check_user_api_key(interaction, "host")
+        if not api_key:
+            return  # User was shown the API key prompt
         
         from datetime import datetime
         embed = discord.Embed(
@@ -285,12 +386,9 @@ async def clear_command(interaction: discord.Interaction):
     try:
         user_id = interaction.user.id
         logger.info(f"Clear command invoked by user {user_id}")
-        
+
         user_root = get_user_root_dir(user_id)
-        
-        if not user_root.exists() or not any(user_root.iterdir()):
-        user_root = get_user_root_dir(user_id)
-        
+
         if not user_root.exists() or not any(user_root.iterdir()):
             embed = discord.Embed(
                 title=f"{EMOJIS['trash']} Clear Projects",
@@ -653,8 +751,9 @@ async def process_zip_upload(message: discord.Message, attachment: discord.Attac
             except Exception as e:
                 logger.warning(f"Error updating progress: {str(e)}")
         
-        # Scan files with progress updates
-        scan_results = await security_checker.scan_files(user_dir, all_files, update_progress)
+        # Scan files with progress updates using Gemini
+        api_key = get_user_api_key(user_id)
+        scan_results = await scan_files_with_gemini(api_key, user_dir, all_files, update_progress)
         
         # Final update embed with results
         malicious_found = False
@@ -801,6 +900,60 @@ async def process_zip_upload(message: discord.Message, attachment: discord.Attac
         session_manager.end_upload_session(user_id)
 
 
+async def scan_files_with_gemini(api_key: str, project_dir: Path, file_paths: List[str], progress_callback=None) -> Dict[str, Dict]:
+    """
+    Scan multiple files for security using Gemini API.
+    """
+    code_extensions = ['.py', '.js', '.ts', '.java', '.cpp', '.c', '.go', '.rs', '.php', '.rb']
+    code_files = [f for f in file_paths if any(f.endswith(ext) for ext in code_extensions)]
+    
+    if not code_files:
+        return {f: {'type': 'normal', 'statement': 'Not a code file'} for f in file_paths}
+    
+    scan_results = {}
+    batch_size = 3
+    
+    for batch_start in range(0, len(code_files), batch_size):
+        batch_files = code_files[batch_start:batch_start + batch_size]
+        
+        for file_path in batch_files:
+            try:
+                full_path = project_dir / file_path
+                if not full_path.is_file():
+                    scan_results[file_path] = {'type': 'normal', 'statement': 'File not found'}
+                    continue
+                
+                # Read file content
+                try:
+                    with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()[:5000]  # Limit to 5KB
+                except Exception:
+                    scan_results[file_path] = {'type': 'normal', 'statement': 'Could not read file'}
+                    continue
+                
+                # Scan with Gemini
+                result = await scan_code_for_security(api_key, file_path, content)
+                scan_results[file_path] = result
+                
+            except Exception as e:
+                logger.warning(f"Error scanning {file_path}: {e}")
+                scan_results[file_path] = {'type': 'normal', 'statement': f'Scan error: {str(e)[:50]}'}
+        
+        # Update progress
+        if progress_callback:
+            try:
+                await progress_callback(batch_files, scan_results)
+            except Exception:
+                pass
+    
+    # Add non-code files as normal
+    for file_path in file_paths:
+        if file_path not in scan_results:
+            scan_results[file_path] = {'type': 'normal', 'statement': 'Not a code file'}
+    
+    return scan_results
+
+
 async def watch_new_files(user_id: int, slot: int, user_dir: Path, poll_interval: int = 12):
     """
     Monitor a user's project directory for new files and scan them.
@@ -826,7 +979,8 @@ async def watch_new_files(user_id: int, slot: int, user_dir: Path, poll_interval
             # endregion
 
             try:
-                scan_results = await security_checker.scan_files(user_dir, new_files)
+                api_key = get_user_api_key(user_id)
+                scan_results = await scan_files_with_gemini(api_key, user_dir, new_files)
             except Exception as e:
                 logger.warning(f"New-file scan failed for user {user_id} slot {slot}: {str(e)}", exc_info=True)
                 # region agent log
@@ -902,7 +1056,10 @@ async def call_openrouter(model: str, messages: list, timeout: int = 120) -> Opt
     
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        # Recommended by OpenRouter docs to identify your app
+        "HTTP-Referer": "https://discord.com",
+        "X-Title": "Working Bot Hoster"
     }
     payload = {
         "model": model,
@@ -963,28 +1120,37 @@ def _parse_files_json(content: str) -> Tuple[bool, Optional[str], Optional[List[
 
 async def generate_files_from_prompt(user_prompt: str) -> Tuple[bool, Optional[str], Optional[List[Dict[str, str]]], Optional[str]]:
     """
-    Generate bot files using prioritized models. Returns (success, error, files, model_used)
+    Generate bot files using prioritized models with robust fallback.
+    Returns (success, error, files, model_used)
     """
     generation_prompt = (
         "You are an expert Discord bot developer with extensive experience in creating bots that are both "
         "functional and scalable. Your task is to generate a Python-based Discord bot based on the following user prompt. "
         "Your response should include multiple files that make up the bot's complete functionality. These files should be "
         "provided in a JSON format with the following structure:\n\n"
-        "\"file_name\": \"file_name_here\",\n\"content\": \"file_content_here\".\n\n"
+        "{\"files\": [{\"file_name\": \"main.py\", \"content\": \"...\"}, ...]}\n\n"
         "The generated files should include at least the main bot code (in a file called main.py), "
         "a requirements file (requirements.txt) listing necessary libraries, .env for sensitive data like the bot token, "
         "and any other necessary files (e.g., README.md, etc.).\n\n"
         "Important: Ensure that the bot is implemented in a modular way, the code should be efficient and well-commented for easy understanding. "
-        "Ensure that external dependencies are listed clearly in the requirements.txt and all sensitive data is securely handled in the .env."
+        "Ensure that external dependencies are listed clearly in the requirements.txt and all sensitive data is securely handled in the .env. "
+        "Respond ONLY with valid JSON, no markdown fences, no explanation."
     )
     full_prompt = f"{generation_prompt}\n\nUser prompt:\n{user_prompt}"
+    # Extended model list for better fallback coverage
     models = [
         "google/gemini-2.0-flash-exp:free",
-        "amazon/nova-2-lite-v1:free"
+        "amazon/nova-2-lite-v1:free",
+        "qwen/qwen3-coder:free",
+        "tngtech/deepseek-r1t-chimera:free",
+        "mistralai/mistral-small-3.1-24b-instruct:free",
     ]
+    last_error = None
     for model in models:
+        logger.info(f"[generate_files] Trying model: {model}")
         content = await call_openrouter(model, [{"role": "user", "content": full_prompt}])
         if not content:
+            logger.warning(f"[generate_files] Model {model} returned no content, trying next.")
             continue
         ok, err, files = _parse_files_json(content)
         # region agent log
@@ -996,13 +1162,18 @@ async def generate_files_from_prompt(user_prompt: str) -> Tuple[bool, Optional[s
         )
         # endregion
         if ok and files:
+            logger.info(f"[generate_files] Success with model {model}, {len(files)} files.")
             return True, None, files, model
-    return False, "Unable to generate files from AI models.", None, None
+        else:
+            last_error = err
+            logger.warning(f"[generate_files] Model {model} returned invalid/truncated JSON: {err}, trying next.")
+    return False, last_error or "All models failed to generate valid files.", None, None
 
 
 async def check_console_output_for_error(output_text: str) -> Optional[bool]:
     """
     Ask the model if console output indicates an error. Returns True/False/None.
+    Uses multiple models with fallback.
     """
     prompt = (
         "Is this console output an error? Reply with JSON: {\"yes\":true} for error, {\"yes\":false} for no error. "
@@ -1011,11 +1182,15 @@ async def check_console_output_for_error(output_text: str) -> Optional[bool]:
     )
     models = [
         "google/gemini-2.0-flash-exp:free",
-        "amazon/nova-2-lite-v1:free"
+        "amazon/nova-2-lite-v1:free",
+        "qwen/qwen3-coder:free",
+        "tngtech/deepseek-r1t-chimera:free",
+        "mistralai/mistral-small-3.1-24b-instruct:free",
     ]
     for model in models:
         content = await call_openrouter(model, [{"role": "user", "content": prompt}], timeout=60)
         if not content:
+            logger.warning(f"[check_error] Model {model} returned no content, trying next.")
             continue
         try:
             if "```" in content:
@@ -1035,7 +1210,8 @@ async def check_console_output_for_error(output_text: str) -> Optional[bool]:
             )
             # endregion
             return decision
-        except Exception:
+        except Exception as e:
+            logger.warning(f"[check_error] Model {model} returned unparseable response: {e}, trying next.")
             continue
     return None
 
@@ -1043,40 +1219,52 @@ async def check_console_output_for_error(output_text: str) -> Optional[bool]:
 async def request_error_fix(files: List[Dict[str, str]], console_output: str) -> Tuple[bool, Optional[str], Optional[List[Dict[str, str]]]]:
     """
     Ask AI to fix code based on console errors. Returns (success, error, updated_files).
+    Uses multiple models with fallback.
     """
     files_json = json.dumps({"files": files, "console_output": console_output})
     prompt = (
         "You are expert discord bot error fixer. Below codes contain error. "
         "Please fix them. Provide full updated code for only necessary files, no placeholders. "
         "Respond strictly in JSON as {\"files\":[{\"file_name\":\"...\",\"content\":\"...\"}],\"statement\": \"...\"}. "
+        "No markdown fences, just raw JSON.\n"
         "Here is the payload:\n"
         f"{files_json}"
     )
     models = [
         "google/gemini-2.0-flash-exp:free",
-        "amazon/nova-2-lite-v1:free"
+        "amazon/nova-2-lite-v1:free",
+        "qwen/qwen3-coder:free",
+        "tngtech/deepseek-r1t-chimera:free",
+        "mistralai/mistral-small-3.1-24b-instruct:free",
     ]
+    last_error = None
     for model in models:
+        logger.info(f"[request_error_fix] Trying model: {model}")
         content = await call_openrouter(model, [{"role": "user", "content": prompt}], timeout=120)
         if not content:
+            logger.warning(f"[request_error_fix] Model {model} returned no content, trying next.")
             continue
         ok, err, parsed = _parse_files_json(content)
         if ok and parsed is not None:
+            logger.info(f"[request_error_fix] Success with model {model}, {len(parsed)} files.")
             return True, None, parsed
         # Even if parsing failed, try to parse statement
         try:
-            if "```" in content:
-                parts = content.split("```")
+            raw = content
+            if "```" in raw:
+                parts = raw.split("```")
                 if len(parts) > 1:
-                    content = parts[1]
-                    if content.startswith("json"):
-                        content = content[4:]
-            data = json.loads(content.strip())
+                    raw = parts[1]
+                    if raw.startswith("json"):
+                        raw = raw[4:]
+            data = json.loads(raw.strip())
             if "statement" in data:
                 return True, data.get("statement"), []
-        except Exception:
+        except Exception as e:
+            last_error = str(e)
+            logger.warning(f"[request_error_fix] Model {model} returned unparseable response: {e}, trying next.")
             continue
-    return False, "Unable to generate fixes from AI", None
+    return False, last_error or "Unable to generate fixes from AI", None
 
 
 def write_files_to_directory(base_dir: Path, files: List[Dict[str, str]]) -> Tuple[List[str], List[str]]:
@@ -1671,6 +1859,29 @@ async def run_generated_bot(channel, user_id: int, slot: int, project_dir: Path,
 async def develop_command(interaction: discord.Interaction, prompt: str):
     """Generate bot code via AI, install, run, and auto-fix errors."""
     user_id = interaction.user.id
+    
+    # Check for API key first (can't defer before this check for modal to work)
+    api_key = get_user_api_key(user_id)
+    if not api_key:
+        # Show API key prompt
+        embed = discord.Embed(
+            title=f"{EMOJIS['warning']} API Key Required",
+            description=(
+                "To use the Bot Hoster, you need to enter your **Google AI Studio API key**.\n\n"
+                "**How to get your free API key:**\n"
+                "1. Click the **Get API Key** button below\n"
+                "2. Sign in with your Google account\n"
+                "3. Create a new API key\n"
+                "4. Copy the key and click **Enter API Key**\n\n"
+                "Your key is stored securely and used only for AI features."
+            ),
+            color=EMBED_COLORS['warning']
+        )
+        embed.set_footer(text="Google AI Studio provides 60 requests/min for free!")
+        view = ApiKeyRequiredView("develop")
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        return
+    
     await interaction.response.defer(thinking=True, ephemeral=False)
 
     # Ensure capacity
@@ -1694,8 +1905,8 @@ async def develop_command(interaction: discord.Interaction, prompt: str):
     )
     progress_msg = await interaction.followup.send(embed=progress_embed)
 
-    # Generate files with AI
-    gen_ok, gen_err, files, model_used = await generate_files_from_prompt(prompt)
+    # Generate files with Gemini AI
+    gen_ok, gen_err, files, _ = await generate_bot_files(api_key, prompt)
     if not gen_ok or not files:
         err_embed = discord.Embed(
             title=f"{EMOJIS['danger']} Generation Failed",
@@ -1709,7 +1920,7 @@ async def develop_command(interaction: discord.Interaction, prompt: str):
     file_names = [f.get("file_name") for f in files if f.get("file_name")]
     status_lines = [f"{EMOJIS['loading']} `{name}`" for name in file_names]
     progress_embed.description = (
-        f"Slot: `{slot}`\nModel: `{model_used}`\n\n" +
+        f"Slot: `{slot}`\nModel: `Gemini 1.5 Flash`\n\n" +
         "\n".join(status_lines)
     )
     await progress_msg.edit(embed=progress_embed)
@@ -1763,8 +1974,8 @@ async def develop_command(interaction: discord.Interaction, prompt: str):
         last_output, run_message = await run_generated_bot(interaction.channel, user_id, slot, project_dir, main_file)
         await refresh_presence()
 
-        # Evaluate output
-        is_error = await check_console_output_for_error(last_output)
+        # Evaluate output using Gemini
+        _, is_error, _ = await check_for_error(api_key, last_output)
         # region agent log
         _agent_debug_log(
             "HYP_D",
@@ -1776,8 +1987,8 @@ async def develop_command(interaction: discord.Interaction, prompt: str):
         if not is_error:
             break
 
-        # Request fixes
-        fix_ok, fix_err, fixed_files = await request_error_fix(files_state, last_output)
+        # Request fixes using Gemini
+        fix_ok, fix_err, fixed_files = await fix_bot_errors(api_key, files_state, last_output)
         if not fix_ok:
             warn_embed = discord.Embed(
                 title=f"{EMOJIS['danger']} Auto-fix failed",

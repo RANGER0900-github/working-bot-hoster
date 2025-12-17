@@ -78,7 +78,10 @@ Respond ONLY with JSON exactly like: {{"type": "malicious" or "normal", "stateme
         
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            # Recommended headers from OpenRouter docs
+            "HTTP-Referer": "https://discord.com",
+            "X-Title": "Working Bot Hoster"
         }
         
         payload = {

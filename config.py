@@ -29,7 +29,6 @@ MAX_BOTS_PER_USER: int = int(os.getenv("MAX_BOTS_PER_USER", "2"))
 # Core secrets and IDs (NO hardcoded secrets here - use environment or .env)
 DISCORD_TOKEN: Optional[str] = os.getenv("DISCORD_TOKEN")
 GUILD_ID: Optional[int] = int(os.getenv("GUILD_ID")) if os.getenv("GUILD_ID") else None
-OPENROUTER_API_KEY: Optional[str] = os.getenv("OPENROUTER_API_KEY")
 
 # Bot settings
 BOT_PREFIX: str = os.getenv("BOT_PREFIX", "!")
@@ -104,9 +103,6 @@ def validate_config() -> tuple[bool, Optional[str]]:
     """
     if not DISCORD_TOKEN or DISCORD_TOKEN == "":
         return False, "DISCORD_TOKEN is not set (set via environment or .env)"
-
-    if not OPENROUTER_API_KEY or OPENROUTER_API_KEY == "":
-        return False, "OPENROUTER_API_KEY is not set (set via environment or .env)"
 
     return True, None
 

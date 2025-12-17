@@ -1,0 +1,342 @@
+2025-12-17 10:33:22 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 10:33:22 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 10:33:22 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 10:33:22 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 10:33:22 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 10:33:22 - __main__ - ERROR - <module>:65 - Configuration error: DISCORD_TOKEN is not set (set via environment or .env)
+2025-12-17 10:33:51 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 10:33:51 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 10:33:51 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 10:33:51 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 10:33:51 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 10:33:51 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 10:33:51 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 10:33:51 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 10:33:51 - security - INFO - __init__:37 - SecurityChecker initialized
+2025-12-17 10:33:51 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 10:33:51 - __main__ - INFO - start:1885 - Status server listening on 0.0.0.0:34877
+2025-12-17 10:33:51 - __main__ - INFO - main:1909 - Status dashboard available at http://127.0.0.1:34877
+2025-12-17 10:33:51 - __main__ - INFO - main:1910 - Starting Discord bot...
+2025-12-17 10:33:56 - __main__ - INFO - on_ready:91 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 10:33:56 - __main__ - INFO - on_ready:92 - Bot ID: 1094877313281302580
+2025-12-17 10:33:56 - __main__ - INFO - on_ready:93 - Guilds: 1
+2025-12-17 10:33:56 - __main__ - INFO - on_ready:97 - Synced 5 command(s)
+2025-12-17 10:34:07 - __main__ - INFO - status_command:208 - Status command invoked by user 892054522032160791
+2025-12-17 10:34:51 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 10:34:52 - __main__ - WARNING - call_openrouter:920 - OpenRouter HTTP 401: {"error":{"message":"User not found.","code":401}}
+2025-12-17 10:34:53 - __main__ - WARNING - call_openrouter:920 - OpenRouter HTTP 401: {"error":{"message":"User not found.","code":401}}
+2025-12-17 10:34:53 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 10:48:49 - __main__ - INFO - _presence_update_loop:143 - Presence update loop cancelled.
+2025-12-17 10:48:49 - __main__ - INFO - main:1944 - Bot shutdown complete. Status server port was: 34877
+2025-12-17 10:48:49 - __main__ - INFO - <module>:1951 - Bot stopped by user
+2025-12-17 10:49:44 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 10:49:44 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 10:49:44 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 10:49:44 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 10:49:44 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 10:49:44 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 10:49:44 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 10:49:44 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 10:49:44 - security - INFO - __init__:37 - SecurityChecker initialized
+2025-12-17 10:49:44 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 10:49:44 - __main__ - INFO - start:1885 - Status server listening on 0.0.0.0:44659
+2025-12-17 10:49:44 - __main__ - INFO - main:1909 - Status dashboard available at http://127.0.0.1:44659
+2025-12-17 10:49:44 - __main__ - INFO - main:1910 - Starting Discord bot...
+2025-12-17 10:49:49 - __main__ - INFO - on_ready:91 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 10:49:49 - __main__ - INFO - on_ready:92 - Bot ID: 1094877313281302580
+2025-12-17 10:49:49 - __main__ - INFO - on_ready:93 - Guilds: 1
+2025-12-17 10:49:49 - __main__ - INFO - on_ready:97 - Synced 5 command(s)
+2025-12-17 10:50:24 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 10:50:26 - __main__ - WARNING - call_openrouter:920 - OpenRouter HTTP 401: {"error":{"message":"User not found.","code":401}}
+2025-12-17 10:50:26 - __main__ - WARNING - call_openrouter:920 - OpenRouter HTTP 401: {"error":{"message":"User not found.","code":401}}
+2025-12-17 10:50:27 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 10:53:57 - __main__ - INFO - _presence_update_loop:143 - Presence update loop cancelled.
+2025-12-17 10:53:57 - __main__ - INFO - main:1944 - Bot shutdown complete. Status server port was: 44659
+2025-12-17 10:53:57 - __main__ - INFO - <module>:1951 - Bot stopped by user
+2025-12-17 10:54:00 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 10:54:00 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 10:54:00 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 10:54:00 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 10:54:00 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 10:54:00 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 10:54:00 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 10:54:00 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 10:54:00 - security - INFO - __init__:37 - SecurityChecker initialized
+2025-12-17 10:54:00 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 10:54:00 - __main__ - INFO - start:1888 - Status server listening on 0.0.0.0:46497
+2025-12-17 10:54:00 - __main__ - INFO - main:1912 - Status dashboard available at http://127.0.0.1:46497
+2025-12-17 10:54:00 - __main__ - INFO - main:1913 - Starting Discord bot...
+2025-12-17 10:54:04 - __main__ - INFO - on_ready:91 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 10:54:04 - __main__ - INFO - on_ready:92 - Bot ID: 1094877313281302580
+2025-12-17 10:54:04 - __main__ - INFO - on_ready:93 - Guilds: 1
+2025-12-17 10:54:05 - __main__ - INFO - on_ready:97 - Synced 5 command(s)
+2025-12-17 10:54:36 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 10:54:37 - __main__ - WARNING - call_openrouter:923 - OpenRouter HTTP 401: {"error":{"message":"User not found.","code":401}}
+2025-12-17 10:54:37 - __main__ - WARNING - call_openrouter:923 - OpenRouter HTTP 401: {"error":{"message":"User not found.","code":401}}
+2025-12-17 10:54:38 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 10:55:45 - __main__ - INFO - _presence_update_loop:143 - Presence update loop cancelled.
+2025-12-17 10:55:45 - __main__ - INFO - main:1947 - Bot shutdown complete. Status server port was: 46497
+2025-12-17 10:55:45 - __main__ - INFO - <module>:1954 - Bot stopped by user
+2025-12-17 11:00:25 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:00:25 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:00:25 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:00:25 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:00:25 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:00:25 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:00:25 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:00:25 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:00:25 - security - INFO - __init__:37 - SecurityChecker initialized
+2025-12-17 11:00:25 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:00:25 - __main__ - INFO - start:1888 - Status server listening on 0.0.0.0:39257
+2025-12-17 11:00:25 - __main__ - INFO - main:1912 - Status dashboard available at http://127.0.0.1:39257
+2025-12-17 11:00:25 - __main__ - INFO - main:1913 - Starting Discord bot...
+2025-12-17 11:00:30 - __main__ - INFO - on_ready:91 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:00:30 - __main__ - INFO - on_ready:92 - Bot ID: 1094877313281302580
+2025-12-17 11:00:30 - __main__ - INFO - on_ready:93 - Guilds: 1
+2025-12-17 11:00:31 - __main__ - INFO - on_ready:97 - Synced 5 command(s)
+2025-12-17 11:01:01 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:01:03 - __main__ - WARNING - call_openrouter:923 - OpenRouter HTTP 429: {"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"google/gemini-2.0-flash-exp:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumula
+2025-12-17 11:01:20 - __main__ - ERROR - _parse_files_json:960 - Failed to parse files JSON: Unterminated string starting at: line 17 column 18 (char 1793)
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 944, in _parse_files_json
+    data = json.loads(content.strip())
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Unterminated string starting at: line 17 column 18 (char 1793)
+2025-12-17 11:01:21 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:09:39 - __main__ - INFO - _presence_update_loop:143 - Presence update loop cancelled.
+2025-12-17 11:09:39 - __main__ - INFO - main:1947 - Bot shutdown complete. Status server port was: 39257
+2025-12-17 11:09:39 - __main__ - INFO - <module>:1954 - Bot stopped by user
+2025-12-17 11:09:42 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:09:42 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:09:42 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:09:42 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:09:42 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:09:42 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:09:42 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:09:42 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:09:42 - security - INFO - __init__:37 - SecurityChecker initialized
+2025-12-17 11:09:42 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:09:42 - __main__ - INFO - start:1919 - Status server listening on 0.0.0.0:46399
+2025-12-17 11:09:42 - __main__ - INFO - main:1943 - Status dashboard available at http://127.0.0.1:46399
+2025-12-17 11:09:42 - __main__ - INFO - main:1944 - Starting Discord bot...
+2025-12-17 11:09:47 - __main__ - INFO - on_ready:91 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:09:47 - __main__ - INFO - on_ready:92 - Bot ID: 1094877313281302580
+2025-12-17 11:09:47 - __main__ - INFO - on_ready:93 - Guilds: 1
+2025-12-17 11:09:47 - __main__ - INFO - on_ready:97 - Synced 5 command(s)
+2025-12-17 11:10:09 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:10:09 - __main__ - INFO - generate_files_from_prompt:993 - [generate_files] Trying model: google/gemini-2.0-flash-exp:free
+2025-12-17 11:10:11 - __main__ - WARNING - call_openrouter:923 - OpenRouter HTTP 429: {"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"google/gemini-2.0-flash-exp:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumula
+2025-12-17 11:10:11 - __main__ - WARNING - generate_files_from_prompt:996 - [generate_files] Model google/gemini-2.0-flash-exp:free returned no content, trying next.
+2025-12-17 11:10:11 - __main__ - INFO - generate_files_from_prompt:993 - [generate_files] Trying model: amazon/nova-2-lite-v1:free
+2025-12-17 11:10:21 - __main__ - ERROR - _parse_files_json:960 - Failed to parse files JSON: Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 944, in _parse_files_json
+    data = json.loads(content.strip())
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2025-12-17 11:10:21 - __main__ - WARNING - generate_files_from_prompt:1012 - [generate_files] Model amazon/nova-2-lite-v1:free returned invalid/truncated JSON: Expecting value: line 1 column 1 (char 0), trying next.
+2025-12-17 11:10:21 - __main__ - INFO - generate_files_from_prompt:993 - [generate_files] Trying model: qwen/qwen3-coder:free
+2025-12-17 11:10:22 - __main__ - WARNING - call_openrouter:923 - OpenRouter HTTP 429: {"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"qwen/qwen3-coder:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rat
+2025-12-17 11:10:22 - __main__ - WARNING - generate_files_from_prompt:996 - [generate_files] Model qwen/qwen3-coder:free returned no content, trying next.
+2025-12-17 11:10:22 - __main__ - INFO - generate_files_from_prompt:993 - [generate_files] Trying model: tngtech/deepseek-r1t-chimera:free
+2025-12-17 11:10:43 - __main__ - ERROR - _parse_files_json:960 - Failed to parse files JSON: Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 944, in _parse_files_json
+    data = json.loads(content.strip())
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2025-12-17 11:10:43 - __main__ - WARNING - generate_files_from_prompt:1012 - [generate_files] Model tngtech/deepseek-r1t-chimera:free returned invalid/truncated JSON: Expecting value: line 1 column 1 (char 0), trying next.
+2025-12-17 11:10:43 - __main__ - INFO - generate_files_from_prompt:993 - [generate_files] Trying model: mistralai/mistral-small-3.1-24b-instruct:free
+2025-12-17 11:10:44 - __main__ - WARNING - call_openrouter:923 - OpenRouter HTTP 429: {"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"mistralai/mistral-small-3.1-24b-instruct:free is temporarily rate-limited upstream. Please retry shortly, or add your own ke
+2025-12-17 11:10:44 - __main__ - WARNING - generate_files_from_prompt:996 - [generate_files] Model mistralai/mistral-small-3.1-24b-instruct:free returned no content, trying next.
+2025-12-17 11:10:45 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:17:18 - __main__ - INFO - _presence_update_loop:143 - Presence update loop cancelled.
+2025-12-17 11:17:18 - __main__ - INFO - main:1978 - Bot shutdown complete. Status server port was: 46399
+2025-12-17 11:17:18 - __main__ - INFO - <module>:1985 - Bot stopped by user
+2025-12-17 11:26:40 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:26:40 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:26:40 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:26:40 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:26:40 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:26:40 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:26:40 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:26:40 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:26:40 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:26:40 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:36987
+2025-12-17 11:26:40 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:36987
+2025-12-17 11:26:40 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 11:26:44 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:26:44 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 11:26:44 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 11:26:44 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 11:27:54 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:27:55 - gemini_client - WARNING - call_gemini:143 - Gemini API error 404: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available model
+2025-12-17 11:27:56 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:29:08 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 11:29:08 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 36987
+2025-12-17 11:29:08 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 11:29:10 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:29:10 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:29:10 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:29:10 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:29:10 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:29:10 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:29:10 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:29:10 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:29:10 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:29:10 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:45873
+2025-12-17 11:29:10 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:45873
+2025-12-17 11:29:10 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 11:29:14 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:29:14 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 11:29:14 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 11:29:15 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 11:29:25 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:29:26 - gemini_client - WARNING - call_gemini:143 - Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+2025-12-17 11:29:27 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:35:24 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 11:35:24 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 45873
+2025-12-17 11:35:24 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 11:35:27 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:35:27 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:35:27 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:35:27 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:35:27 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:35:27 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:35:27 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:35:27 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:35:27 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:35:27 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:35423
+2025-12-17 11:35:27 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:35423
+2025-12-17 11:35:27 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 11:35:32 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:35:32 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 11:35:32 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 11:35:32 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 11:35:50 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:35:52 - gemini_client - WARNING - call_gemini:143 - Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+2025-12-17 11:35:52 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:41:36 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 11:41:36 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 35423
+2025-12-17 11:41:36 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 11:41:38 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:41:38 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:41:38 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:41:38 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:41:38 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:41:38 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:41:38 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:41:38 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:41:38 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:41:38 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:33535
+2025-12-17 11:41:38 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:33535
+2025-12-17 11:41:38 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 11:41:42 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:41:42 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 11:41:42 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 11:41:42 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 11:41:59 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:42:00 - gemini_client - WARNING - call_gemini:143 - Gemini API error 404: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available model
+2025-12-17 11:42:00 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:43:49 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 11:43:49 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 33535
+2025-12-17 11:43:49 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 11:43:51 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:43:51 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:43:51 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:43:51 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:43:51 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:43:51 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:43:51 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:43:51 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:43:51 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:43:51 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:36373
+2025-12-17 11:43:51 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:36373
+2025-12-17 11:43:51 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 11:43:55 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:43:55 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 11:43:55 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 11:43:56 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 11:44:13 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:44:13 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-2.0-flash-exp
+2025-12-17 11:44:14 - gemini_client - WARNING - call_gemini:159 - [Gemini] Model gemini-2.0-flash-exp rate limited, trying next...
+2025-12-17 11:44:14 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-1.5-flash-latest
+2025-12-17 11:44:14 - gemini_client - WARNING - call_gemini:155 - [Gemini] Model gemini-1.5-flash-latest not found, trying next...
+2025-12-17 11:44:14 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-1.5-pro-latest
+2025-12-17 11:44:14 - gemini_client - WARNING - call_gemini:155 - [Gemini] Model gemini-1.5-pro-latest not found, trying next...
+2025-12-17 11:44:14 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-pro
+2025-12-17 11:44:14 - gemini_client - WARNING - call_gemini:155 - [Gemini] Model gemini-pro not found, trying next...
+2025-12-17 11:44:15 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:46:43 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 11:46:43 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 36373
+2025-12-17 11:46:43 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 11:46:48 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 11:46:48 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 11:46:48 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 11:46:48 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 11:46:48 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 11:46:48 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 11:46:48 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 11:46:48 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 11:46:48 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 11:46:48 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:36175
+2025-12-17 11:46:48 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:36175
+2025-12-17 11:46:48 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 11:46:52 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 11:46:52 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 11:46:52 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 11:46:53 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 11:47:14 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 11:47:15 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-2.0-flash
+2025-12-17 11:47:15 - gemini_client - WARNING - call_gemini:159 - [Gemini] Model gemini-2.0-flash rate limited, trying next...
+2025-12-17 11:47:15 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-2.0-flash-001
+2025-12-17 11:47:15 - gemini_client - WARNING - call_gemini:159 - [Gemini] Model gemini-2.0-flash-001 rate limited, trying next...
+2025-12-17 11:47:15 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-2.5-flash
+2025-12-17 11:47:20 - gemini_client - WARNING - call_gemini:164 - Gemini API error 503: {
+  "error": {
+    "code": 503,
+    "message": "The model is overloaded. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+2025-12-17 11:47:20 - gemini_client - INFO - call_gemini:143 - [Gemini] Trying model: gemini-2.0-flash-exp
+2025-12-17 11:47:20 - gemini_client - WARNING - call_gemini:159 - [Gemini] Model gemini-2.0-flash-exp rate limited, trying next...
+2025-12-17 11:47:20 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 11:47:46 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 11:47:46 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 36175
+2025-12-17 11:47:46 - __main__ - INFO - <module>:2165 - Bot stopped by user

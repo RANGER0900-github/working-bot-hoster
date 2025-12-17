@@ -340,3 +340,380 @@ json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 2025-12-17 11:47:46 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
 2025-12-17 11:47:46 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 36175
 2025-12-17 11:47:46 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 12:03:29 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:03:29 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:03:29 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:03:29 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:03:29 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:03:29 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:03:29 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:03:29 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:03:29 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:03:29 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:43059
+2025-12-17 12:03:29 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:43059
+2025-12-17 12:03:29 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 12:03:30 - __main__ - ERROR - main:2131 - Fatal error while running bot: Improper token has been passed.
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 839, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 401 Unauthorized (error code: 0): 401: Unauthorized
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2125, in main
+    await bot.start(DISCORD_TOKEN)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 846, in start
+    await self.login(token)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 675, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 843, in static_login
+    raise LoginFailure('Improper token has been passed.') from exc
+discord.errors.LoginFailure: Improper token has been passed.
+2025-12-17 12:03:30 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 43059
+2025-12-17 12:03:30 - __main__ - ERROR - <module>:2167 - Fatal error: Improper token has been passed.
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 839, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 401 Unauthorized (error code: 0): 401: Unauthorized
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2163, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2125, in main
+    await bot.start(DISCORD_TOKEN)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 846, in start
+    await self.login(token)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 675, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 843, in static_login
+    raise LoginFailure('Improper token has been passed.') from exc
+discord.errors.LoginFailure: Improper token has been passed.
+2025-12-17 12:03:47 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:03:47 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:03:47 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:03:47 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:03:47 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:03:47 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:03:47 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:03:47 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:03:47 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:03:47 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:43719
+2025-12-17 12:03:47 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:43719
+2025-12-17 12:03:47 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 12:03:48 - __main__ - ERROR - main:2131 - Fatal error while running bot: Improper token has been passed.
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 839, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 401 Unauthorized (error code: 0): 401: Unauthorized
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2125, in main
+    await bot.start(DISCORD_TOKEN)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 846, in start
+    await self.login(token)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 675, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 843, in static_login
+    raise LoginFailure('Improper token has been passed.') from exc
+discord.errors.LoginFailure: Improper token has been passed.
+2025-12-17 12:03:48 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 43719
+2025-12-17 12:03:48 - __main__ - ERROR - <module>:2167 - Fatal error: Improper token has been passed.
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 839, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 401 Unauthorized (error code: 0): 401: Unauthorized
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2163, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2125, in main
+    await bot.start(DISCORD_TOKEN)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 846, in start
+    await self.login(token)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 675, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 843, in static_login
+    raise LoginFailure('Improper token has been passed.') from exc
+discord.errors.LoginFailure: Improper token has been passed.
+2025-12-17 12:05:35 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:05:35 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:05:35 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:05:35 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:05:35 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:05:35 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:05:35 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:05:35 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:05:35 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:05:35 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:42563
+2025-12-17 12:05:35 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:42563
+2025-12-17 12:05:35 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 12:05:35 - __main__ - ERROR - main:2131 - Fatal error while running bot: Improper token has been passed.
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 839, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 401 Unauthorized (error code: 0): 401: Unauthorized
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2125, in main
+    await bot.start(DISCORD_TOKEN)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 846, in start
+    await self.login(token)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 675, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 843, in static_login
+    raise LoginFailure('Improper token has been passed.') from exc
+discord.errors.LoginFailure: Improper token has been passed.
+2025-12-17 12:05:35 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 42563
+2025-12-17 12:05:35 - __main__ - ERROR - <module>:2167 - Fatal error: Improper token has been passed.
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 839, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 401 Unauthorized (error code: 0): 401: Unauthorized
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2163, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/kali/Downloads/working-bot-hoster/bot.py", line 2125, in main
+    await bot.start(DISCORD_TOKEN)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 846, in start
+    await self.login(token)
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/client.py", line 675, in login
+    data = await self.http.static_login(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kali/Downloads/working-bot-hoster/venv/lib/python3.13/site-packages/discord/http.py", line 843, in static_login
+    raise LoginFailure('Improper token has been passed.') from exc
+discord.errors.LoginFailure: Improper token has been passed.
+2025-12-17 12:06:21 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:06:21 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:06:21 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:06:21 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:06:21 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:06:21 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:06:21 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:06:21 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:06:21 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:06:21 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:34501
+2025-12-17 12:06:21 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:34501
+2025-12-17 12:06:21 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 12:06:25 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 12:06:25 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 12:06:25 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 12:06:25 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 12:07:17 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 12:07:18 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:07:18 - bytez_client - WARNING - call_bytez:155 - Bytez API error 404: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /model/run</pre>
+</body>
+</html>
+
+2025-12-17 12:07:18 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: microsoft/Phi-3-mini-4k-instruct
+2025-12-17 12:07:19 - bytez_client - WARNING - call_bytez:155 - Bytez API error 404: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /model/run</pre>
+</body>
+</html>
+
+2025-12-17 12:07:19 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+2025-12-17 12:07:19 - bytez_client - WARNING - call_bytez:155 - Bytez API error 404: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /model/run</pre>
+</body>
+</html>
+
+2025-12-17 12:07:19 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 12:08:47 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 12:08:47 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 34501
+2025-12-17 12:08:47 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 12:08:50 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:08:50 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:08:50 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:08:50 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:08:50 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:08:50 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:08:50 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:08:50 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:08:50 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:08:50 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:45749
+2025-12-17 12:08:50 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:45749
+2025-12-17 12:08:50 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 12:08:55 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 12:08:55 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 12:08:55 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 12:08:55 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 12:09:13 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 12:09:14 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:09:34 - bytez_client - INFO - call_bytez:180 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:09:34 - bytez_client - ERROR - generate_bot_files:283 - Failed to parse generated files JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-12-17 12:09:34 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 12:10:57 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 12:10:57 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 45749
+2025-12-17 12:10:57 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 12:10:58 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:10:58 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:10:58 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:10:58 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:10:58 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:10:58 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:10:58 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:10:58 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:10:58 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:10:58 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:45687
+2025-12-17 12:10:58 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:45687
+2025-12-17 12:10:58 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 12:11:02 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 12:11:02 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 12:11:02 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 12:11:03 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 12:11:47 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 12:11:47 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:12:09 - bytez_client - INFO - call_bytez:180 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:12:09 - bytez_client - ERROR - generate_bot_files:294 - Failed to parse generated files JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-12-17 12:12:09 - bytez_client - WARNING - generate_bot_files:295 - Raw content (first 1000 chars): {'role': 'assistant', 'content': '{\n  "files": [\n    {\n      "file_name": "main.py",\n      "content": "import os\\nimport discord\\nfrom discord import app_commands\\nfrom discord.ext import commands\\n\\n# Bot configuration\\nintents = discord.Intents.default()\\nintents.message_content = True\\nintents.guilds = True\\n\\nbot = commands.Bot(command_prefix=\\"!\\", intents=intents)\\n\\n# Slash command group\\n@bot.tree.command(name=\\"hello\\", description=\\"Says hello to the user\\")\\ndef hello(interaction: discord.Interaction):\\n    \\"\\"\\"\\n    Responds with a greeting to the user.\\n    \\"\\"\\"\\n    await interaction.response.send_message(f\\"Hello, {interaction.user.mention}! Welcome to the random bot!\\")\\n\\n@bot.tree.command(name=\\"roll\\", description=\\"Rolls a random number between 1 and 100\\")\\ndef roll(interaction: discord.Interaction):\\n    \\"\\"\\"\\n    Rolls a random number between 1 and 100 and responds with the result.\\n    \\"\\"\\"\\n    import
+2025-12-17 12:12:09 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 12:12:50 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 12:12:50 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 45687
+2025-12-17 12:12:50 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 12:12:53 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:12:53 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:12:53 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:12:53 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:12:53 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:12:53 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:12:53 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:12:53 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:12:53 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:12:53 - __main__ - INFO - start:2099 - Status server listening on 0.0.0.0:34009
+2025-12-17 12:12:53 - __main__ - INFO - main:2123 - Status dashboard available at http://127.0.0.1:34009
+2025-12-17 12:12:53 - __main__ - INFO - main:2124 - Starting Discord bot...
+2025-12-17 12:12:57 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 12:12:57 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 12:12:57 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 12:12:58 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 12:13:01 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 12:13:02 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:20 - bytez_client - INFO - call_bytez:178 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:24 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 12:13:25 - code_executor - INFO - start_process:63 - Starting process: /home/kali/Downloads/working-bot-hoster/user_uploads/892054522032160791/bot_1/main.py in /home/kali/Downloads/working-bot-hoster/user_uploads/892054522032160791/bot_1
+2025-12-17 12:13:25 - code_executor - INFO - start_process:82 - Process started with PID 113907
+2025-12-17 12:13:25 - session_manager - INFO - register_running_bot:188 - Registered running bot for user 892054522032160791 in slot 1
+2025-12-17 12:13:25 - code_executor - INFO - monitor_console_output:115 - Starting console monitoring for PID 113907
+2025-12-17 12:13:25 - code_executor - INFO - monitor_console_output:164 - Console monitoring ended for PID 113907
+2025-12-17 12:13:26 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:27 - bytez_client - INFO - call_bytez:178 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:27 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:38 - bytez_client - INFO - call_bytez:178 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:40 - code_executor - INFO - start_process:63 - Starting process: /home/kali/Downloads/working-bot-hoster/user_uploads/892054522032160791/bot_1/main.py in /home/kali/Downloads/working-bot-hoster/user_uploads/892054522032160791/bot_1
+2025-12-17 12:13:40 - code_executor - INFO - start_process:82 - Process started with PID 114033
+2025-12-17 12:13:40 - session_manager - INFO - register_running_bot:188 - Registered running bot for user 892054522032160791 in slot 1
+2025-12-17 12:13:40 - code_executor - INFO - monitor_console_output:115 - Starting console monitoring for PID 114033
+2025-12-17 12:13:41 - code_executor - INFO - monitor_console_output:164 - Console monitoring ended for PID 114033
+2025-12-17 12:13:41 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:42 - bytez_client - INFO - call_bytez:178 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:42 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:13:53 - bytez_client - INFO - call_bytez:178 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:18:56 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 12:18:56 - __main__ - INFO - main:2158 - Bot shutdown complete. Status server port was: 34009
+2025-12-17 12:18:56 - __main__ - INFO - <module>:2165 - Bot stopped by user
+2025-12-17 12:18:59 - root - INFO - setup_logging:64 - ============================================================
+2025-12-17 12:18:59 - root - INFO - setup_logging:65 - Bot Hoster - Logging initialized
+2025-12-17 12:18:59 - root - INFO - setup_logging:66 - Log file: /home/kali/Downloads/working-bot-hoster/logs/bot_hoster.log
+2025-12-17 12:18:59 - root - INFO - setup_logging:67 - Log level: INFO
+2025-12-17 12:18:59 - root - INFO - setup_logging:68 - ============================================================
+2025-12-17 12:18:59 - file_handler - INFO - __init__:26 - FileHandler initialized with max_file_size=102400
+2025-12-17 12:18:59 - session_manager - INFO - __init__:57 - SessionManager initialized with timeout=600, max_bots=2
+2025-12-17 12:18:59 - code_executor - INFO - __init__:29 - CodeExecutor initialized with max_lines=50, update_interval=3
+2025-12-17 12:18:59 - discord.client - WARNING - __init__:341 - PyNaCl is not installed, voice will NOT be supported
+2025-12-17 12:18:59 - __main__ - INFO - start:2100 - Status server listening on 0.0.0.0:34319
+2025-12-17 12:18:59 - __main__ - INFO - main:2124 - Status dashboard available at http://127.0.0.1:34319
+2025-12-17 12:18:59 - __main__ - INFO - main:2125 - Starting Discord bot...
+2025-12-17 12:19:04 - __main__ - INFO - on_ready:93 - Bot logged in as ROBLOX G3N%#0494
+2025-12-17 12:19:04 - __main__ - INFO - on_ready:94 - Bot ID: 1094877313281302580
+2025-12-17 12:19:04 - __main__ - INFO - on_ready:95 - Guilds: 1
+2025-12-17 12:19:04 - __main__ - INFO - on_ready:99 - Synced 5 command(s)
+2025-12-17 12:19:13 - session_manager - INFO - start_upload_session:111 - Started upload session for user 892054522032160791 in develop (slot 1)
+2025-12-17 12:19:15 - bytez_client - INFO - call_bytez:129 - [Bytez] Trying model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:19:35 - bytez_client - INFO - call_bytez:178 - [Bytez] Success with model: Qwen/Qwen3-4B-Instruct-2507
+2025-12-17 12:19:38 - session_manager - INFO - end_upload_session:140 - Ended upload session for user 892054522032160791
+2025-12-17 12:24:15 - __main__ - INFO - _presence_update_loop:145 - Presence update loop cancelled.
+2025-12-17 12:24:15 - __main__ - INFO - main:2159 - Bot shutdown complete. Status server port was: 34319
+2025-12-17 12:24:15 - __main__ - INFO - <module>:2166 - Bot stopped by user

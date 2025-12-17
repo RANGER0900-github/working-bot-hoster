@@ -30,7 +30,7 @@ from logger_setup import setup_logging, get_logger
 from file_handler import FileHandler
 from session_manager import SessionManager
 from code_executor import CodeExecutor
-from gemini_client import (
+from bytez_client import (
     get_user_api_key, set_user_api_key, has_user_api_key,
     generate_bot_files, check_for_error, fix_bot_errors, scan_code_for_security
 )
@@ -146,11 +146,11 @@ async def _presence_update_loop():
         raise
 # ============ API Key Entry Classes ============ #
 
-class GeminiApiKeyModal(discord.ui.Modal, title="🔑 Enter Gemini API Key"):
-    """Modal for entering Gemini API key."""
+class BytezApiKeyModal(discord.ui.Modal, title="🔑 Enter Bytez API Key"):
+    """Modal for entering Bytez API key."""
     
     api_key_input = discord.ui.TextInput(
-        label="Gemini API Key",
+        label="Bytez API Key",
         placeholder="Enter your Google AI Studio API key here...",
         style=discord.TextStyle.short,
         required=True,
@@ -171,7 +171,7 @@ class GeminiApiKeyModal(discord.ui.Modal, title="🔑 Enter Gemini API Key"):
             embed = discord.Embed(
                 title=f"{EMOJIS['safe']} API Key Saved!",
                 description=(
-                    "Your Gemini API key has been saved successfully.\n\n"
+                    "Your Bytez API key has been saved successfully.\n\n"
                     f"You can now use `/{self.callback_command}` command!"
                 ),
                 color=EMBED_COLORS['success']
@@ -202,7 +202,7 @@ class ApiKeyRequiredView(discord.ui.View):
     
     @discord.ui.button(label="🔑 Enter API Key", style=discord.ButtonStyle.primary)
     async def enter_api_key(self, interaction: discord.Interaction, button: discord.ui.Button):
-        modal = GeminiApiKeyModal(self.callback_command)
+        modal = BytezApiKeyModal(self.callback_command)
         await interaction.response.send_modal(modal)
 
 
@@ -751,7 +751,7 @@ async def process_zip_upload(message: discord.Message, attachment: discord.Attac
             except Exception as e:
                 logger.warning(f"Error updating progress: {str(e)}")
         
-        # Scan files with progress updates using Gemini
+        # Scan files with progress updates using Bytez AI
         api_key = get_user_api_key(user_id)
         scan_results = await scan_files_with_gemini(api_key, user_dir, all_files, update_progress)
         
@@ -902,7 +902,7 @@ async def process_zip_upload(message: discord.Message, attachment: discord.Attac
 
 async def scan_files_with_gemini(api_key: str, project_dir: Path, file_paths: List[str], progress_callback=None) -> Dict[str, Dict]:
     """
-    Scan multiple files for security using Gemini API.
+    Scan multiple files for security using Bytez API.
     """
     code_extensions = ['.py', '.js', '.ts', '.java', '.cpp', '.c', '.go', '.rs', '.php', '.rb']
     code_files = [f for f in file_paths if any(f.endswith(ext) for ext in code_extensions)]
@@ -931,7 +931,7 @@ async def scan_files_with_gemini(api_key: str, project_dir: Path, file_paths: Li
                     scan_results[file_path] = {'type': 'normal', 'statement': 'Could not read file'}
                     continue
                 
-                # Scan with Gemini
+                # Scan with Bytez AI
                 result = await scan_code_for_security(api_key, file_path, content)
                 scan_results[file_path] = result
                 
@@ -1392,10 +1392,34 @@ class PackageInstallModal(discord.ui.Modal, title="📦 Install Packages"):
     
     async def on_submit(self, interaction: discord.Interaction):
         """Handle package installation."""
+        #region agent log
+        import time
+        with open('/home/kali/Downloads/working-bot-hoster/.cursor/debug.log','a') as _log:
+            _log.write(str({
+                "sessionId": "debug-session",
+                "runId": "pre-fix",
+                "hypothesisId": "H1",
+                "location": "bot.py:1394",
+                "message": "Entered on_submit for InstallPackagesModal",
+                "data": {"user_dir": str(self.user_dir)},
+                "timestamp": int(time.time() * 1000)
+            })+'\n')
+        #endregion
         try:
             packages = [p.strip() for p in self.package_input.value.split('\n') if p.strip()]
             logger.info(f"Installing packages for user {interaction.user.id}: {packages}")
-            
+            #region agent log
+            with open('/home/kali/Downloads/working-bot-hoster/.cursor/debug.log','a') as _log:
+                _log.write(str({
+                    "sessionId": "debug-session",
+                    "runId": "pre-fix",
+                    "hypothesisId": "H2",
+                    "location": "bot.py:1397",
+                    "message": "Parsed package names",
+                    "data": {"packages": packages},
+                    "timestamp": int(time.time() * 1000)
+                })+'\n')
+            #endregion
             embed = discord.Embed(
                 title=f"{EMOJIS['loading']} Installing Packages",
                 description=f"Installing `{len(packages)}` package(s)...",
@@ -1403,10 +1427,47 @@ class PackageInstallModal(discord.ui.Modal, title="📦 Install Packages"):
             )
             await interaction.response.send_message(embed=embed)
             msg = await interaction.original_response()
-            
+            #region agent log
+            with open('/home/kali/Downloads/working-bot-hoster/.cursor/debug.log','a') as _log:
+                _log.write(str({
+                    "sessionId": "debug-session",
+                    "runId": "pre-fix",
+                    "hypothesisId": "H3",
+                    "location": "bot.py:1406",
+                    "message": "Entering pip try block",
+                    "data": {},
+                    "timestamp": int(time.time() * 1000)
+                })+'\n')
+            #endregion
             try:
+                #region agent log
+                with open('/home/kali/Downloads/working-bot-hoster/.cursor/debug.log','a') as _log:
+                    _log.write(str({
+                        "sessionId": "debug-session",
+                        "runId": "pre-fix",
+                        "hypothesisId": "H1",
+                        "location": "bot.py:1409",
+                        "message": "Assigning venv_bin, pip_cmd",
+                        "data": {"user_dir": str(self.user_dir)},
+                        "timestamp": int(time.time() * 1000)
+                    })+'\n')
+                #endregion
+                venv_bin = os.path.join(str(self.user_dir), 'venv', 'bin', 'pip')
+                pip_cmd = [venv_bin, 'install'] if os.path.exists(venv_bin) else ['pip', 'install']
+                #region agent log
+                with open('/home/kali/Downloads/working-bot-hoster/.cursor/debug.log','a') as _log:
+                    _log.write(str({
+                        "sessionId": "debug-session",
+                        "runId": "pre-fix",
+                        "hypothesisId": "H1",
+                        "location": "bot.py:1412",
+                        "message": "About to run pip install",
+                        "data": {"pip_cmd": pip_cmd, "packages": packages},
+                        "timestamp": int(time.time() * 1000)
+                    })+'\n')
+                #endregion
                 result = subprocess.run(
-                    ['pip', 'install'] + packages,
+                    pip_cmd + packages,
                     capture_output=True,
                     text=True,
                     timeout=300
@@ -1505,7 +1566,7 @@ class MainFileView(discord.ui.View):
         self.slot = slot
         self.add_item(MainFileSelect(files, self))
     
-    @discord.ui.button(label=f"{EMOJIS['play']} Run Bot", style=discord.ButtonStyle.success, row=1)
+    @discord.ui.button(label='▶️ Run Bot', style=discord.ButtonStyle.success, row=1)
     async def run_bot(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Run the bot with selected file."""
         if interaction.user.id != self.user_id:
@@ -1696,7 +1757,50 @@ class BotControlView(discord.ui.View):
         super().__init__(timeout=None)
         self.user_id = user_id
         self.slot = slot
-    
+
+    @discord.ui.button(label='🛠️ Fix Error', style=discord.ButtonStyle.secondary, row=0)
+    async def fix_error(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Allow user to manually request error fix after running bot."""
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message('❌ This is not your bot!', ephemeral=True)
+            return
+        bot_info = session_manager.get_running_bot(self.user_id, self.slot)
+        if not bot_info:
+            await interaction.response.send_message("❌ No bot is running!", ephemeral=True)
+            return
+        project_dir = Path(bot_info['project_path'])
+        # Get last console output
+        output_lines = bot_info.get('console_output', [])
+        last_output = "\n".join(output_lines)
+        api_key = get_user_api_key(self.user_id)
+        # Load all .py code files
+        files = []
+        for file in project_dir.glob("*.py"):
+            content = file.read_text(encoding='utf-8', errors='ignore')
+            files.append({"file_name": file.name, "content": content})
+        # Request error fix
+        await interaction.response.defer(thinking=True, ephemeral=True)
+        fix_ok, fix_err, fixed_files = await fix_bot_errors(api_key, files, last_output)
+        if not fix_ok:
+            warn_embed = discord.Embed(
+                title=f"{EMOJIS['danger']} Auto-fix failed",
+                description=fix_err or "Could not generate fixes.",
+                color=EMBED_COLORS['error']
+            )
+            await interaction.followup.send(embed=warn_embed, ephemeral=True)
+            return
+        if fixed_files:
+            # Overwrite changed files
+            for f in fixed_files:
+                path = project_dir / f['file_name']
+                path.write_text(f['content'], encoding='utf-8')
+            msg = f"{EMOJIS['safe']} Error fixed. Overwritten files: {[f['file_name'] for f in fixed_files]}. Re-run your bot!"
+            embed = discord.Embed(title="🛠️ Error Fixed", description=msg, color=EMBED_COLORS['success'])
+            await interaction.followup.send(embed=embed, ephemeral=True)
+        else:
+            embed = discord.Embed(title="⚠️ No Code Fix Applied", description=fix_err or "No code fix suggested.", color=EMBED_COLORS['warning'])
+            await interaction.followup.send(embed=embed, ephemeral=True)
+
     @discord.ui.button(label=f"{EMOJIS['stop']} Stop Bot", style=discord.ButtonStyle.danger)
     async def stop_bot(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Stop the running bot."""
@@ -1759,7 +1863,9 @@ class EnvFillModal(discord.ui.Modal, title="Fill .env values"):
             lines = []
             for item in self.children:
                 if isinstance(item, discord.ui.TextInput):
-                    lines.append(f"{item.label}={item.value}")
+                    # item.label is deprecated, switch to item.default_label if available
+label = getattr(item, 'default_label', getattr(item, 'label', ''))
+lines.append(f"{label}={item.value}")
             self.env_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.env_path, "w", encoding="utf-8") as fp:
                 fp.write("\n".join(lines))
@@ -1905,7 +2011,7 @@ async def develop_command(interaction: discord.Interaction, prompt: str):
     )
     progress_msg = await interaction.followup.send(embed=progress_embed)
 
-    # Generate files with Gemini AI
+    # Generate files with Bytez AI
     gen_ok, gen_err, files, _ = await generate_bot_files(api_key, prompt)
     if not gen_ok or not files:
         err_embed = discord.Embed(
@@ -1920,7 +2026,7 @@ async def develop_command(interaction: discord.Interaction, prompt: str):
     file_names = [f.get("file_name") for f in files if f.get("file_name")]
     status_lines = [f"{EMOJIS['loading']} `{name}`" for name in file_names]
     progress_embed.description = (
-        f"Slot: `{slot}`\nModel: `Gemini 1.5 Flash`\n\n" +
+        f"Slot: `{slot}`\nModel: `Bytez AI`\n\n" +
         "\n".join(status_lines)
     )
     await progress_msg.edit(embed=progress_embed)
@@ -1965,57 +2071,15 @@ async def develop_command(interaction: discord.Interaction, prompt: str):
     # End upload session so user can initiate another if needed
     session_manager.end_upload_session(user_id)
 
-    # Run bot with auto-fix loop (max 2 attempts)
+    # Prepare for manual bot run
     main_file = project_dir / "main.py"
-    attempts = 0
-    files_state = files
-    last_output = ""
-    while attempts < 2:
-        last_output, run_message = await run_generated_bot(interaction.channel, user_id, slot, project_dir, main_file)
-        await refresh_presence()
-
-        # Evaluate output using Gemini
-        _, is_error, _ = await check_for_error(api_key, last_output)
-        # region agent log
-        _agent_debug_log(
-            "HYP_D",
-            "bot.py:develop_command:error_check",
-            "Evaluated console output for error",
-            {"attempt": attempts, "is_error": is_error},
-        )
-        # endregion
-        if not is_error:
-            break
-
-        # Request fixes using Gemini
-        fix_ok, fix_err, fixed_files = await fix_bot_errors(api_key, files_state, last_output)
-        if not fix_ok:
-            warn_embed = discord.Embed(
-                title=f"{EMOJIS['danger']} Auto-fix failed",
-                description=fix_err or "Could not generate fixes.",
-                color=EMBED_COLORS['error']
-            )
-            await interaction.followup.send(embed=warn_embed, ephemeral=True)
-            break
-
-        if fixed_files:
-            write_files_to_directory(project_dir, fixed_files)
-            files_state = fixed_files
-            # Reinstall requirements in case they changed
-            req_path = find_requirements_path(project_dir)
-            if req_path:
-                install_requirements(req_path, project_dir)
-            attempts += 1
-            continue
-        else:
-            # Only statement provided
-            info_embed = discord.Embed(
-                title=f"{EMOJIS['warning']} Auto-fix hint",
-                description=fix_err or "Check your configuration values.",
-                color=EMBED_COLORS['warning']
-            )
-            await interaction.followup.send(embed=info_embed, ephemeral=True)
-            break
+    # Tell user to launch bot using UI controls
+    start_embed = discord.Embed(
+        title=f"{EMOJIS['play']} Ready to Run",
+        description=f"Your bot is ready! Use the `Run Bot` button to start your generated bot. If you encounter errors, you can use the `Fix Error` button below the console to auto-fix.",
+        color=EMBED_COLORS['info']
+    )
+    await interaction.followup.send(embed=start_embed, ephemeral=False)
 
 
 

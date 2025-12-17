@@ -1,6 +1,6 @@
 # Discord Bot Hosting Service
 
-A Discord bot that allows users to host their own Discord bots on your server, with AI-powered bot generation using Google Gemini.
+A Discord bot that allows users to host their own Discord bots on your server, with AI-powered bot generation using Bytez.
 
 ## Features
 
@@ -12,7 +12,7 @@ A Discord bot that allows users to host their own Discord bots on your server, w
 - 🗑️ **Project Management**: Clear all your projects with `/clear`
 - 🛠️ **AI Bot Generation**: Create Discord bots from natural language with `/develop`
 - 🔍 **Auto-Scan New Files**: Monitors running bots for new files and scans them automatically
-- 🔧 **Auto-Fix Errors**: Automatically attempts to fix generated bot errors
+- 🔧 **Manual Fix Errors**: Use the **Fix Error** button to repair generated bot errors as needed!
 
 ## Installation
 
@@ -34,12 +34,10 @@ python3 -m venv venv
 
 ## API Key System
 
-This bot uses **Google Gemini API** for AI features. Users need to provide their own API key:
+This bot uses **Bytez.com** for all AI features. Users need to provide their own Bytez API key (defaults provided for free):
 
-1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
-2. Sign in with Google account
-3. Create a new API key
-4. Use the **Enter API Key** button when prompted in Discord
+- Get your API key from https://docs.bytez.com/model-api/docs/task/chat 
+- Use the **Enter API Key** button when prompted in Discord
 
 API keys are stored in `api_keys.json` with format:
 ```json
@@ -49,7 +47,7 @@ API keys are stored in `api_keys.json` with format:
 }
 ```
 
-**Free tier limits:** 60 requests/minute, 1 million tokens/day
+**Free tier limits:** see [Bytez docs](https://docs.bytez.com/model-api/docs/task/chat)
 
 ## Commands
 
@@ -63,9 +61,9 @@ API keys are stored in `api_keys.json` with format:
 
 ### /host Command
 1. User runs `/host` command
-2. If no API key, user is prompted to enter their Gemini API key
+2. If no API key, user is prompted to enter their Bytez API key
 3. User uploads their bot code as a `.zip` file
-4. Code is automatically scanned for security issues using Gemini AI
+4. Code is automatically scanned for security issues using Bytez AI
 5. If safe, dependencies are installed (if requirements.txt exists)
 6. User selects main file from dropdown
 7. Bot runs and console output is streamed to Discord
@@ -74,12 +72,12 @@ API keys are stored in `api_keys.json` with format:
 
 ### /develop Command
 1. User runs `/develop prompt: <description>`
-2. If no API key, user is prompted to enter their Gemini API key
+2. If no API key, user is prompted to enter their Bytez API key
 3. AI generates complete bot files (main.py, requirements.txt, .env, README.md)
 4. User can fill .env values via a form
 5. Dependencies are installed automatically
-6. Bot runs with console output streaming
-7. If errors occur, AI attempts to auto-fix (up to 2 attempts)
+6. User launches bot using **Run Bot** button in Discord
+7. If errors occur, click **Fix Error** to attempt an auto-fix (as many times as you'd like)
 
 ## Security
 
@@ -95,7 +93,7 @@ The bot uses AI-powered security scanning to detect:
 ```
 .
 ├── bot.py              # Main bot file
-├── gemini_client.py    # Gemini API client
+├── bytez_client.py     # Bytez API client
 ├── api_keys.json       # User API keys storage
 ├── security.py         # Legacy security module
 ├── config.py           # Configuration management

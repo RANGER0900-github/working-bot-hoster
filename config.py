@@ -22,6 +22,9 @@ USER_UPLOADS_DIR = BASE_DIR / "user_uploads"
 HOST_FILES_DIR = BASE_DIR / "host_files"
 USER_UPLOADS_DIR.mkdir(exist_ok=True)
 HOST_FILES_DIR.mkdir(exist_ok=True)
+# Multi-bot support
+MAX_BOTS_PER_USER: int = int(os.getenv("MAX_BOTS_PER_USER", "2"))
+
 
 # Core secrets and IDs (NO hardcoded secrets here - use environment or .env)
 DISCORD_TOKEN: Optional[str] = os.getenv("DISCORD_TOKEN")
@@ -108,17 +111,31 @@ def validate_config() -> tuple[bool, Optional[str]]:
     return True, None
 
 
-def get_user_project_dir(user_id: int) -> Path:
+def get_user_project_dir(user_id: int, bot_slot: int = 1) -> Path:
     """
-    Get or create user project directory.
+    Get or create user project directory for a specific bot slot.
 
     Args:
         user_id: Discord user ID
+        bot_slot: Slot number for the user's bot (1-based)
 
     Returns:
-        Path: Absolute path to user's project directory
+        Path: Absolute path to user's project directory for the slot
     """
-    user_dir = USER_UPLOADS_DIR / str(user_id)
-    user_dir.mkdir(parents=True, exist_ok=True)
-    return user_dir.absolute()
+    # Ensure slot is within bounds
+    if bot_slot < 1:
+        bot_slot = 1
+    user_root = USER_UPLOADS_DIR / str(user_id)
+    slot_dir = user_root / f"bot_{bot_slot}"
+    slot_dir.mkdir(parents=True, exist_ok=True)
+    return slot_dir.absolute()
+
+
+def get_user_root_dir(user_id: int) -> Path:
+    """
+    Return the root directory for all of a user's projects.
+    """
+    user_root = USER_UPLOADS_DIR / str(user_id)
+    user_root.mkdir(parents=True, exist_ok=True)
+    return user_root.absolute()
 

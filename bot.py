@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import Optional, List, Tuple, Dict
 import aiohttp
 from aiohttp import web
-import re
-import random
+import json
+import time
 
 # Branding tagline used across embeds/presence
 COOL_TAGLINE = "⚡ UnitedNodes • Instant Discord bot hosting with style"
@@ -23,7 +23,8 @@ COOL_TAGLINE = "⚡ UnitedNodes • Instant Discord bot hosting with style"
 # Import our modules
 from config import (
     DISCORD_TOKEN, GUILD_ID, OPENROUTER_API_KEY, EMOJIS, EMBED_COLORS,
-    get_user_project_dir, validate_config, SESSION_TIMEOUT, MAX_CONSOLE_OUTPUT_LENGTH
+    get_user_root_dir, validate_config,
+    SESSION_TIMEOUT, MAX_CONSOLE_OUTPUT_LENGTH, MAX_BOTS_PER_USER
 )
 from logger_setup import setup_logging, get_logger
 from file_handler import FileHandler
@@ -34,6 +35,29 @@ from security import SecurityChecker
 # Set up logging
 setup_logging()
 logger = get_logger(__name__)
+
+# region agent log helper
+DEBUG_LOG_PATH = Path("/home/kali/Downloads/working-bot-hoster/.cursor/debug.log")
+
+
+def _agent_debug_log(hypothesis_id: str, location: str, message: str, data: Dict):
+    """Append a single NDJSON debug log line for debug-mode analysis."""
+    try:
+        payload = {
+            "sessionId": "debug-session",
+            "runId": "pre-fix",
+            "hypothesisId": hypothesis_id,
+            "location": location,
+            "message": message,
+            "data": data,
+            "timestamp": int(time.time() * 1000),
+        }
+        with open(DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload) + "\n")
+    except Exception:
+        # Never let debug logging break runtime behavior
+        pass
+# endregion
 
 # Validate configuration
 is_valid, error_msg = validate_config()
@@ -46,6 +70,7 @@ file_handler = FileHandler()
 session_manager = SessionManager(session_timeout=SESSION_TIMEOUT)
 code_executor = CodeExecutor()
 security_checker = SecurityChecker(OPENROUTER_API_KEY)
+http_client: Optional[aiohttp.ClientSession] = None
 
 # Bot setup
 intents = discord.Intents.default()
@@ -261,9 +286,12 @@ async def clear_command(interaction: discord.Interaction):
         user_id = interaction.user.id
         logger.info(f"Clear command invoked by user {user_id}")
         
-        user_dir = get_user_project_dir(user_id)
+        user_root = get_user_root_dir(user_id)
         
-        if not user_dir.exists() or not any(user_dir.iterdir()):
+        if not user_root.exists() or not any(user_root.iterdir()):
+        user_root = get_user_root_dir(user_id)
+        
+        if not user_root.exists() or not any(user_root.iterdir()):
             embed = discord.Embed(
                 title=f"{EMOJIS['trash']} Clear Projects",
                 description="You don't have any projects to delete!",
@@ -371,17 +399,17 @@ class ConfirmClearView(discord.ui.View):
         try:
             logger.info(f"User {self.user_id} confirmed project deletion")
             
-            # Stop running bot if any
+            # Stop running bot(s) if any
             if session_manager.is_bot_running(self.user_id):
-                success, error = session_manager.stop_bot(self.user_id)
+                success, error = session_manager.stop_bot(self.user_id, None)
                 if not success:
-                    logger.warning(f"Error stopping bot for user {self.user_id}: {error}")
+                    logger.warning(f"Error stopping bots for user {self.user_id}: {error}")
                 else:
                     await refresh_presence()
             
-            # Delete directory
-            user_dir = get_user_project_dir(self.user_id)
-            success, error = file_handler.cleanup_directory(user_dir)
+            # Delete root directory
+            user_root = get_user_root_dir(self.user_id)
+            success, error = file_handler.cleanup_directory(user_root)
             
             if success:
                 embed = discord.Embed(
@@ -434,13 +462,19 @@ class UploadMethodView(discord.ui.View):
         """Upload in channel."""
         try:
             logger.info(f"User {interaction.user.id} selected channel upload")
-            session_manager.start_upload_session(interaction.user.id, "channel")
+            success, error, slot, _ = session_manager.start_upload_session(interaction.user.id, "channel")
+            if not success or slot is None:
+                await interaction.response.send_message(
+                    f"❌ {error or 'Cannot start upload right now.'}",
+                    ephemeral=True
+                )
+                return
             
             embed = discord.Embed(
                 title=f"{EMOJIS['upload']} Upload Your Bot Code",
                 description=(
                     "Please upload your bot code as a **`.zip` file** in this channel.\n\n"
-                    "I'll be waiting for your `.zip` file..."
+                    f"I'll be waiting for your `.zip` file for slot `{slot}`..."
                 ),
                 color=EMBED_COLORS['info']
             )
@@ -459,13 +493,19 @@ class UploadMethodView(discord.ui.View):
         """Upload in DM."""
         try:
             logger.info(f"User {interaction.user.id} selected DM upload")
-            session_manager.start_upload_session(interaction.user.id, "dm")
+            success, error, slot, _ = session_manager.start_upload_session(interaction.user.id, "dm")
+            if not success or slot is None:
+                await interaction.response.send_message(
+                    f"❌ {error or 'Cannot start upload right now.'}",
+                    ephemeral=True
+                )
+                return
             
             embed = discord.Embed(
                 title=f"{EMOJIS['upload']} Upload Your Bot Code",
                 description=(
                     "Please upload your bot code as a **`.zip` file** in our DM.\n\n"
-                    "I'll be waiting for your `.zip` file in DMs..."
+                    f"I'll be waiting for your `.zip` file in DMs... (slot `{slot}`)"
                 ),
                 color=EMBED_COLORS['info']
             )
@@ -478,6 +518,7 @@ class UploadMethodView(discord.ui.View):
                     ephemeral=True
                 )
             except discord.Forbidden:
+                session_manager.end_upload_session(interaction.user.id)
                 await interaction.response.send_message(
                     "❌ I cannot send you a DM! Please enable DMs from server members.",
                     ephemeral=True
@@ -502,6 +543,13 @@ async def on_message(message: discord.Message):
     
     # Check if user is in upload process
     if not session_manager.is_user_uploading(user_id):
+        return
+    
+    project_dir = session_manager.get_upload_project_dir(user_id)
+    current_slot = session_manager.get_upload_slot(user_id)
+    if not project_dir or current_slot is None:
+        logger.warning(f"Upload session missing project dir/slot for user {user_id}")
+        session_manager.end_upload_session(user_id)
         return
     
     upload_location = session_manager.get_upload_location(user_id)
@@ -530,17 +578,14 @@ async def on_message(message: discord.Message):
         return
     
     # Process the zip file
-    await process_zip_upload(message, zip_attachment, user_id)
+    await process_zip_upload(message, zip_attachment, user_id, project_dir, current_slot)
 
-async def process_zip_upload(message: discord.Message, attachment: discord.Attachment, user_id: int):
-    """Process uploaded zip file."""
+async def process_zip_upload(message: discord.Message, attachment: discord.Attachment, user_id: int, user_dir: Path, slot: int):
+    """Process uploaded zip file for a given user slot."""
     try:
         logger.info(f"Processing zip upload from user {user_id}: {attachment.filename}")
         
-        # Create user directory
-        user_dir = get_user_project_dir(user_id)
-        
-        # Clean previous uploads
+        # Ensure slot directory exists and is clean
         file_handler.cleanup_directory(user_dir)
         user_dir.mkdir(parents=True, exist_ok=True)
         
@@ -731,7 +776,7 @@ async def process_zip_upload(message: discord.Message, attachment: discord.Attac
             
             await install_msg.edit(embed=embed)
             # Continue to main file selector after requirements installation
-            await show_main_file_selector(message.channel, user_id, user_dir, all_files)
+            await show_main_file_selector(message.channel, user_id, user_dir, all_files, slot)
         else:
             # Ask if they want to install packages
             embed = discord.Embed(
@@ -742,7 +787,7 @@ async def process_zip_upload(message: discord.Message, attachment: discord.Attac
                 ),
                 color=EMBED_COLORS['warning']
             )
-            view = InstallPackagesView(user_id, user_dir, message.channel)
+            view = InstallPackagesView(user_id, user_dir, message.channel, slot)
             await message.channel.send(embed=embed, view=view)
         
     except Exception as e:
@@ -755,14 +800,369 @@ async def process_zip_upload(message: discord.Message, attachment: discord.Attac
         await message.channel.send(embed=embed)
         session_manager.end_upload_session(user_id)
 
+
+async def watch_new_files(user_id: int, slot: int, user_dir: Path, poll_interval: int = 12):
+    """
+    Monitor a user's project directory for new files and scan them.
+    Sends a DM to the user with results; deletes malicious files automatically.
+    """
+    try:
+        known_files = set(file_handler.get_all_files(user_dir))
+        while session_manager.is_bot_running(user_id, slot):
+            await asyncio.sleep(poll_interval)
+            current_files = set(file_handler.get_all_files(user_dir))
+            new_files = [f for f in current_files if f not in known_files]
+            known_files = current_files
+            if not new_files:
+                continue
+
+            # region agent log
+            _agent_debug_log(
+                "HYP_B",
+                "bot.py:watch_new_files:new_files",
+                "Detected new files for running bot",
+                {"user_id": user_id, "slot": slot, "count": len(new_files)},
+            )
+            # endregion
+
+            try:
+                scan_results = await security_checker.scan_files(user_dir, new_files)
+            except Exception as e:
+                logger.warning(f"New-file scan failed for user {user_id} slot {slot}: {str(e)}", exc_info=True)
+                # region agent log
+                _agent_debug_log(
+                    "HYP_B",
+                    "bot.py:watch_new_files:scan_failed",
+                    "New-file scan raised exception",
+                    {"user_id": user_id, "slot": slot, "error": str(e)},
+                )
+                # endregion
+                continue
+
+            malicious = [f for f, r in scan_results.items() if r.get('type') == 'malicious']
+            safe = [f for f, r in scan_results.items() if r.get('type') != 'malicious']
+
+            # region agent log
+            _agent_debug_log(
+                "HYP_B",
+                "bot.py:watch_new_files:scan_results",
+                "Completed new-file scan",
+                {"user_id": user_id, "slot": slot, "malicious_count": len(malicious), "safe_count": len(safe)},
+            )
+            # endregion
+
+            # Delete malicious files
+            for mf in malicious:
+                try:
+                    target = (user_dir / mf).resolve()
+                    # Only delete inside user_dir
+                    target.relative_to(user_dir.resolve())
+                    if target.exists():
+                        target.unlink()
+                        logger.warning(f"Deleted malicious file {mf} for user {user_id} slot {slot}")
+                except Exception as e:
+                    logger.error(f"Failed to delete malicious file {mf} for user {user_id}: {str(e)}", exc_info=True)
+
+            # Notify user via DM
+            try:
+                user = await bot.fetch_user(user_id)
+            except Exception as e:
+                logger.warning(f"Unable to fetch user {user_id} for new file DM: {str(e)}")
+                continue
+
+            try:
+                description_lines = []
+                for f in safe:
+                    description_lines.append(f"{EMOJIS['safe']} `{f}` — scanned safe")
+                for f in malicious:
+                    description_lines.append(f"{EMOJIS['danger']} `{f}` — flagged & removed")
+                description = "\n".join(description_lines[:20])
+                if len(description_lines) > 20:
+                    description += f"\n...and {len(description_lines) - 20} more file(s)"
+
+                embed = discord.Embed(
+                    title=f"{EMOJIS['warning']} New File Detected (slot {slot})",
+                    description=description,
+                    color=EMBED_COLORS['warning'] if malicious else EMBED_COLORS['success']
+                )
+                await user.send(embed=embed)
+            except Exception as e:
+                logger.warning(f"Failed to DM user {user_id} about new files: {str(e)}")
+                continue
+    except Exception as e:
+        logger.error(f"Fatal error in watch_new_files for user {user_id} slot {slot}: {str(e)}", exc_info=True)
+
+
+async def call_openrouter(model: str, messages: list, timeout: int = 120) -> Optional[str]:
+    """
+    Call OpenRouter chat completion API and return the message content.
+    """
+    if not OPENROUTER_API_KEY:
+        raise RuntimeError("OPENROUTER_API_KEY is not configured.")
+    
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": 0.35
+    }
+
+    try:
+        client = http_client or aiohttp.ClientSession()
+        async with client.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=aiohttp.ClientTimeout(total=timeout)
+        ) as response:
+            if response.status != 200:
+                text = await response.text()
+                logger.warning(f"OpenRouter HTTP {response.status}: {text[:200]}")
+                return None
+            data = await response.json()
+            return data.get("choices", [{}])[0].get("message", {}).get("content")
+    except Exception as e:
+        logger.error(f"OpenRouter call failed: {str(e)}", exc_info=True)
+        return None
+
+
+def _parse_files_json(content: str) -> Tuple[bool, Optional[str], Optional[List[Dict[str, str]]]]:
+    """
+    Parse the JSON string returned by the AI into a list of files.
+    """
+    try:
+        # Strip markdown fences if present
+        if "```" in content:
+            parts = content.split("```")
+            if len(parts) > 1:
+                content = parts[1]
+                if content.startswith("json"):
+                    content = content[4:]
+        data = json.loads(content.strip())
+        files = data.get("files")
+        if not isinstance(files, list):
+            return False, "Invalid response format: missing files array", None
+        sanitized = []
+        for f in files:
+            name = f.get("file_name")
+            body = f.get("content", "")
+            if not name:
+                continue
+            path_obj = Path(name)
+            if path_obj.is_absolute() or ".." in path_obj.parts:
+                return False, f"Unsafe file path detected: {name}", None
+            sanitized.append({"file_name": name, "content": body})
+        return True, None, sanitized
+    except Exception as e:
+        logger.error(f"Failed to parse files JSON: {str(e)}", exc_info=True)
+        return False, str(e), None
+
+
+async def generate_files_from_prompt(user_prompt: str) -> Tuple[bool, Optional[str], Optional[List[Dict[str, str]]], Optional[str]]:
+    """
+    Generate bot files using prioritized models. Returns (success, error, files, model_used)
+    """
+    generation_prompt = (
+        "You are an expert Discord bot developer with extensive experience in creating bots that are both "
+        "functional and scalable. Your task is to generate a Python-based Discord bot based on the following user prompt. "
+        "Your response should include multiple files that make up the bot's complete functionality. These files should be "
+        "provided in a JSON format with the following structure:\n\n"
+        "\"file_name\": \"file_name_here\",\n\"content\": \"file_content_here\".\n\n"
+        "The generated files should include at least the main bot code (in a file called main.py), "
+        "a requirements file (requirements.txt) listing necessary libraries, .env for sensitive data like the bot token, "
+        "and any other necessary files (e.g., README.md, etc.).\n\n"
+        "Important: Ensure that the bot is implemented in a modular way, the code should be efficient and well-commented for easy understanding. "
+        "Ensure that external dependencies are listed clearly in the requirements.txt and all sensitive data is securely handled in the .env."
+    )
+    full_prompt = f"{generation_prompt}\n\nUser prompt:\n{user_prompt}"
+    models = [
+        "google/gemini-2.0-flash-exp:free",
+        "amazon/nova-2-lite-v1:free"
+    ]
+    for model in models:
+        content = await call_openrouter(model, [{"role": "user", "content": full_prompt}])
+        if not content:
+            continue
+        ok, err, files = _parse_files_json(content)
+        # region agent log
+        _agent_debug_log(
+            "HYP_C",
+            "bot.py:generate_files_from_prompt:model_result",
+            "Model generation attempt",
+            {"model": model, "ok": ok, "file_count": len(files) if files else 0, "err": err},
+        )
+        # endregion
+        if ok and files:
+            return True, None, files, model
+    return False, "Unable to generate files from AI models.", None, None
+
+
+async def check_console_output_for_error(output_text: str) -> Optional[bool]:
+    """
+    Ask the model if console output indicates an error. Returns True/False/None.
+    """
+    prompt = (
+        "Is this console output an error? Reply with JSON: {\"yes\":true} for error, {\"yes\":false} for no error. "
+        "No explanation.\n\n"
+        f"Console output:\n{output_text}"
+    )
+    models = [
+        "google/gemini-2.0-flash-exp:free",
+        "amazon/nova-2-lite-v1:free"
+    ]
+    for model in models:
+        content = await call_openrouter(model, [{"role": "user", "content": prompt}], timeout=60)
+        if not content:
+            continue
+        try:
+            if "```" in content:
+                parts = content.split("```")
+                if len(parts) > 1:
+                    content = parts[1]
+                    if content.startswith("json"):
+                        content = content[4:]
+            data = json.loads(content.strip())
+            decision = bool(data.get("yes"))
+            # region agent log
+            _agent_debug_log(
+                "HYP_D",
+                "bot.py:check_console_output_for_error:decision",
+                "Model classified console output",
+                {"model": model, "is_error": decision},
+            )
+            # endregion
+            return decision
+        except Exception:
+            continue
+    return None
+
+
+async def request_error_fix(files: List[Dict[str, str]], console_output: str) -> Tuple[bool, Optional[str], Optional[List[Dict[str, str]]]]:
+    """
+    Ask AI to fix code based on console errors. Returns (success, error, updated_files).
+    """
+    files_json = json.dumps({"files": files, "console_output": console_output})
+    prompt = (
+        "You are expert discord bot error fixer. Below codes contain error. "
+        "Please fix them. Provide full updated code for only necessary files, no placeholders. "
+        "Respond strictly in JSON as {\"files\":[{\"file_name\":\"...\",\"content\":\"...\"}],\"statement\": \"...\"}. "
+        "Here is the payload:\n"
+        f"{files_json}"
+    )
+    models = [
+        "google/gemini-2.0-flash-exp:free",
+        "amazon/nova-2-lite-v1:free"
+    ]
+    for model in models:
+        content = await call_openrouter(model, [{"role": "user", "content": prompt}], timeout=120)
+        if not content:
+            continue
+        ok, err, parsed = _parse_files_json(content)
+        if ok and parsed is not None:
+            return True, None, parsed
+        # Even if parsing failed, try to parse statement
+        try:
+            if "```" in content:
+                parts = content.split("```")
+                if len(parts) > 1:
+                    content = parts[1]
+                    if content.startswith("json"):
+                        content = content[4:]
+            data = json.loads(content.strip())
+            if "statement" in data:
+                return True, data.get("statement"), []
+        except Exception:
+            continue
+    return False, "Unable to generate fixes from AI", None
+
+
+def write_files_to_directory(base_dir: Path, files: List[Dict[str, str]]) -> Tuple[List[str], List[str]]:
+    """
+    Write generated files safely into the target directory.
+    Returns (written_files, errors)
+    """
+    written = []
+    errors = []
+    for f in files:
+        name = f.get("file_name")
+        content = f.get("content", "")
+        if not name:
+            continue
+        path_obj = Path(name)
+        if path_obj.is_absolute() or ".." in path_obj.parts:
+            errors.append(f"Unsafe path skipped: {name}")
+            continue
+        target = (base_dir / path_obj).resolve()
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with open(target, "w", encoding="utf-8") as fp:
+                fp.write(content)
+            written.append(str(path_obj))
+        except Exception as e:
+            errors.append(f"{name}: {str(e)}")
+    return written, errors
+
+
+def parse_env_keys(env_path: Path, limit: int = 5) -> List[str]:
+    """Extract env variable keys from a .env file (best-effort)."""
+    keys = []
+    if not env_path.exists():
+        return keys
+    try:
+        with open(env_path, "r", encoding="utf-8", errors="ignore") as fp:
+            for line in fp:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key = line.split("=", 1)[0].strip()
+                if key:
+                    keys.append(key)
+                if len(keys) >= limit:
+                    break
+    except Exception:
+        return []
+    return keys
+
+
+def find_requirements_path(project_dir: Path) -> Optional[Path]:
+    """Locate requirements.txt inside the generated project."""
+    candidates = [project_dir / "requirements.txt", project_dir / "requirement.txt"]
+    for c in candidates:
+        if c.exists() and c.is_file():
+            return c
+    return None
+
+
+def install_requirements(req_path: Path, cwd: Path) -> Tuple[bool, str]:
+    """Install requirements from a file."""
+    try:
+        result = subprocess.run(
+            ['pip', 'install', '-r', str(req_path)],
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=360
+        )
+        if result.returncode == 0:
+            return True, result.stdout
+        return False, result.stderr or result.stdout
+    except subprocess.TimeoutExpired:
+        return False, "Dependency installation timed out."
+    except Exception as e:
+        return False, str(e)
+
 class InstallPackagesView(discord.ui.View):
     """View for installing packages."""
     
-    def __init__(self, user_id: int, user_dir: Path, channel):
+    def __init__(self, user_id: int, user_dir: Path, channel, slot: int):
         super().__init__(timeout=300)
         self.user_id = user_id
         self.user_dir = user_dir
         self.channel = channel
+        self.slot = slot
     
     @discord.ui.button(label="✅ Yes", style=discord.ButtonStyle.success)
     async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -771,7 +1171,7 @@ class InstallPackagesView(discord.ui.View):
             await interaction.response.send_message("❌ This is not your upload!", ephemeral=True)
             return
         
-        modal = PackageInstallModal(self.user_dir, self.channel)
+        modal = PackageInstallModal(self.user_dir, self.channel, self.slot)
         await interaction.response.send_modal(modal)
     
     @discord.ui.button(label="❌ No", style=discord.ButtonStyle.danger)
@@ -783,16 +1183,17 @@ class InstallPackagesView(discord.ui.View):
         
         # Get all files for main file selector
         all_files = file_handler.get_all_files(self.user_dir)
-        await show_main_file_selector(self.channel, self.user_id, self.user_dir, all_files)
+        await show_main_file_selector(self.channel, self.user_id, self.user_dir, all_files, self.slot)
         await interaction.response.defer()
 
 class PackageInstallModal(discord.ui.Modal, title="📦 Install Packages"):
     """Modal for entering package names."""
     
-    def __init__(self, user_dir: Path, channel):
+    def __init__(self, user_dir: Path, channel, slot: int):
         super().__init__()
         self.user_dir = user_dir
         self.channel = channel
+        self.slot = slot
     
     package_input = discord.ui.TextInput(
         label="Package Names",
@@ -860,7 +1261,7 @@ class PackageInstallModal(discord.ui.Modal, title="📦 Install Packages"):
             
             # Get all files for main file selector
             all_files = file_handler.get_all_files(self.user_dir)
-            await show_main_file_selector(self.channel, interaction.user.id, self.user_dir, all_files)
+            await show_main_file_selector(self.channel, interaction.user.id, self.user_dir, all_files, self.slot)
             
         except Exception as e:
             logger.error(f"Error in package installation modal: {str(e)}", exc_info=True)
@@ -869,7 +1270,7 @@ class PackageInstallModal(discord.ui.Modal, title="📦 Install Packages"):
                 ephemeral=True
             )
 
-async def show_main_file_selector(channel, user_id: int, user_dir: Path, all_files: list):
+async def show_main_file_selector(channel, user_id: int, user_dir: Path, all_files: list, slot: int):
     """Show dropdown to select main file."""
     try:
         # Filter Python files
@@ -887,11 +1288,11 @@ async def show_main_file_selector(channel, user_id: int, user_dir: Path, all_fil
         
         embed = discord.Embed(
             title=f"{EMOJIS['file']} Select Main File",
-            description="Choose the main file to run your bot:",
+            description=f"Choose the main file to run your bot (slot {slot}):",
             color=EMBED_COLORS['info']
         )
         
-        view = MainFileView(user_id, user_dir, python_files)
+        view = MainFileView(user_id, user_dir, python_files, slot)
         await channel.send(embed=embed, view=view)
         session_manager.end_upload_session(user_id)
         
@@ -907,12 +1308,13 @@ async def show_main_file_selector(channel, user_id: int, user_dir: Path, all_fil
 class MainFileView(discord.ui.View):
     """View for selecting and running main file."""
     
-    def __init__(self, user_id: int, user_dir: Path, files: list):
+    def __init__(self, user_id: int, user_dir: Path, files: list, slot: int):
         super().__init__(timeout=300)
         self.user_id = user_id
         self.user_dir = user_dir
         self.selected_file = None
         self.files = files
+        self.slot = slot
         self.add_item(MainFileSelect(files, self))
     
     @discord.ui.button(label=f"{EMOJIS['play']} Run Bot", style=discord.ButtonStyle.success, row=1)
@@ -924,6 +1326,26 @@ class MainFileView(discord.ui.View):
         
         if not self.selected_file:
             await interaction.response.send_message("❌ Please select a main file first!", ephemeral=True)
+            return
+        
+        # Enforce per-user max bots
+        if session_manager.get_running_bots_count_for_user(self.user_id) >= MAX_BOTS_PER_USER:
+            embed = discord.Embed(
+                title=f"{EMOJIS['danger']} Bot Limit Reached",
+                description=(
+                    f"You can run up to `{MAX_BOTS_PER_USER}` bots. Stop an existing bot before starting a new one."
+                ),
+                color=EMBED_COLORS['error']
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+        
+        # Prevent double-use of same slot
+        if session_manager.is_bot_running(self.user_id, self.slot):
+            await interaction.response.send_message(
+                f"❌ Slot {self.slot} is already running. Stop it first.",
+                ephemeral=True
+            )
             return
         
         try:
@@ -941,24 +1363,10 @@ class MainFileView(discord.ui.View):
                 await interaction.response.send_message("❌ Invalid file path!", ephemeral=True)
                 return
             
-            # Check if user already has a bot running
-            if session_manager.is_bot_running(self.user_id):
-                embed = discord.Embed(
-                    title=f"{EMOJIS['danger']} Bot Already Running",
-                    description=(
-                        "❌ You can only run **one bot at a time**!\n\n"
-                        f"If you want to run another bot, use `/clear` to stop your current bot and clear your data.\n\n"
-                        "Then you can upload and run a new bot."
-                    ),
-                    color=EMBED_COLORS['error']
-                )
-                await interaction.response.send_message(embed=embed, ephemeral=True)
-                return
-            
             # Start bot
             embed = discord.Embed(
                 title=f"{EMOJIS['play']} Starting Bot",
-                description=f"Starting bot with main file: `{self.selected_file}`",
+                description=f"Starting bot with main file: `{self.selected_file}` (slot {self.slot})",
                 color=EMBED_COLORS['success']
             )
             await interaction.response.send_message(embed=embed)
@@ -976,7 +1384,11 @@ class MainFileView(discord.ui.View):
                 return
             
             # Register running bot
-            session_manager.register_running_bot(self.user_id, process, self.user_dir, msg)
+            session_manager.register_running_bot(self.user_id, self.slot, process, self.user_dir, msg)
+            await refresh_presence()
+            
+            # Start new-file watcher for auto-scanning newly created files
+            bot.loop.create_task(watch_new_files(self.user_id, self.slot, self.user_dir))
             
             # Start console output monitoring
             async def output_callback(output_lines: list):
@@ -991,7 +1403,7 @@ class MainFileView(discord.ui.View):
                         description=f"```\n{output_text}\n```",
                         color=EMBED_COLORS['info']
                     )
-                    bot_info = session_manager.get_running_bot(self.user_id)
+                    bot_info = session_manager.get_running_bot(self.user_id, self.slot)
                     if bot_info and bot_info.get('message'):
                         await bot_info['message'].edit(embed=embed)
                 except Exception as e:
@@ -1008,7 +1420,7 @@ class MainFileView(discord.ui.View):
                             description=f"```\n{full_text}\n```",
                             color=EMBED_COLORS['info']
                         )
-                        bot_info = session_manager.get_running_bot(self.user_id)
+                        bot_info = session_manager.get_running_bot(self.user_id, self.slot)
                         if bot_info and bot_info.get('message'):
                             try:
                                 await bot_info['message'].edit(embed=embed)
@@ -1039,14 +1451,15 @@ class MainFileView(discord.ui.View):
                 title=f"{EMOJIS['play']} Bot Running",
                 description=(
                     f"Bot is now running!\n\n"
-                    f"Main file: `{self.selected_file}`\n\n"
+                    f"Main file: `{self.selected_file}`\n"
+                    f"Slot: `{self.slot}`\n\n"
                     f"Console output will appear below:"
                 ),
                 color=EMBED_COLORS['success']
             )
             if status_server and status_server.display_url:
                 embed.description += f"\n\nStatus page: `{status_server.display_url}`"
-            view = BotControlView(self.user_id)
+            view = BotControlView(self.user_id, self.slot)
             await msg.edit(embed=embed, view=view)
             logger.info(f"Bot started for user {self.user_id} with file {self.selected_file}")
             
@@ -1091,9 +1504,10 @@ class MainFileSelect(discord.ui.Select):
 class BotControlView(discord.ui.View):
     """View for controlling running bot."""
     
-    def __init__(self, user_id: int):
+    def __init__(self, user_id: int, slot: int):
         super().__init__(timeout=None)
         self.user_id = user_id
+        self.slot = slot
     
     @discord.ui.button(label=f"{EMOJIS['stop']} Stop Bot", style=discord.ButtonStyle.danger)
     async def stop_bot(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -1102,19 +1516,20 @@ class BotControlView(discord.ui.View):
             await interaction.response.send_message("❌ This is not your bot!", ephemeral=True)
             return
         
-        if not session_manager.is_bot_running(self.user_id):
+        if not session_manager.is_bot_running(self.user_id, self.slot):
             await interaction.response.send_message("❌ No bot is running!", ephemeral=True)
             return
         
         try:
-            success, error = session_manager.stop_bot(self.user_id)
+            success, error = session_manager.stop_bot(self.user_id, self.slot)
             if success:
                 embed = discord.Embed(
                     title=f"{EMOJIS['stop']} Bot Stopped",
-                    description="Your bot has been stopped.",
+                    description=f"Your bot in slot {self.slot} has been stopped.",
                     color=EMBED_COLORS['error']
                 )
                 logger.info(f"Bot stopped by user {self.user_id}")
+                await refresh_presence()
             else:
                 embed = discord.Embed(
                     title=f"{EMOJIS['danger']} Error",
@@ -1134,6 +1549,262 @@ class BotControlView(discord.ui.View):
 
 
 
+class EnvFillModal(discord.ui.Modal, title="Fill .env values"):
+    """Modal to capture .env values from the user."""
+    
+    def __init__(self, env_path: Path, keys: List[str]):
+        super().__init__(timeout=300)
+        self.env_path = env_path
+        self.keys = keys
+        # Dynamically create text inputs (up to 5)
+        for key in keys:
+            field = discord.ui.TextInput(
+                label=key,
+                placeholder=f"Enter value for {key}",
+                required=True,
+                style=discord.TextStyle.short
+            )
+            self.add_item(field)
+    
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            lines = []
+            for item in self.children:
+                if isinstance(item, discord.ui.TextInput):
+                    lines.append(f"{item.label}={item.value}")
+            self.env_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.env_path, "w", encoding="utf-8") as fp:
+                fp.write("\n".join(lines))
+            embed = discord.Embed(
+                title=f"{EMOJIS['safe']} .env updated",
+                description="Your environment values have been saved.",
+                color=EMBED_COLORS['success']
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error saving .env values: {str(e)}", exc_info=True)
+            await interaction.response.send_message(
+                "❌ Failed to save .env values.",
+                ephemeral=True
+            )
+
+
+class EnvFillView(discord.ui.View):
+    """View that provides a button to open the .env modal."""
+    
+    def __init__(self, env_path: Path, keys: List[str]):
+        super().__init__(timeout=600)
+        self.env_path = env_path
+        self.keys = keys
+    
+    @discord.ui.button(label="Fill .env", style=discord.ButtonStyle.primary)
+    async def fill_env(self, interaction: discord.Interaction, button: discord.ui.Button):
+        modal = EnvFillModal(self.env_path, self.keys)
+        await interaction.response.send_modal(modal)
+
+
+async def run_generated_bot(channel, user_id: int, slot: int, project_dir: Path, main_file: Path):
+    """
+    Start and monitor a generated bot project.
+    Returns tuple (full_output_text, message_obj)
+    """
+    try:
+        embed = discord.Embed(
+            title=f"{EMOJIS['play']} Starting Generated Bot",
+            description=f"Starting `main.py` in slot `{slot}`...",
+            color=EMBED_COLORS['info']
+        )
+        msg = await channel.send(embed=embed)
+        
+        process, error = code_executor.start_process(main_file, project_dir)
+        if process is None:
+            embed = discord.Embed(
+                title=f"{EMOJIS['danger']} Start Failed",
+                description=f"Error: `{error}`",
+                color=EMBED_COLORS['error']
+            )
+            await msg.edit(embed=embed)
+            return "", msg
+        
+        session_manager.register_running_bot(user_id, slot, process, project_dir, msg)
+        await refresh_presence()
+
+        # Start new file watcher
+        bot.loop.create_task(watch_new_files(user_id, slot, project_dir))
+
+        async def output_callback(output_lines: list):
+            try:
+                output_text = "\n".join(output_lines)
+                if len(output_text) > MAX_CONSOLE_OUTPUT_LENGTH:
+                    output_text = output_text[-MAX_CONSOLE_OUTPUT_LENGTH:]
+                embed = discord.Embed(
+                    title=f"{EMOJIS['play']} Console Output (slot {slot})",
+                    description=f"```\n{output_text}\n```",
+                    color=EMBED_COLORS['info']
+                )
+                bot_info = session_manager.get_running_bot(user_id, slot)
+                if bot_info and bot_info.get('message'):
+                    await bot_info['message'].edit(embed=embed, view=BotControlView(user_id, slot))
+            except Exception as e:
+                logger.warning(f"Output callback error: {str(e)}")
+
+        full_lines = await code_executor.monitor_console_output(process, output_callback)
+        full_text = "\n".join(full_lines)
+
+        final_embed = discord.Embed(
+            title=f"{EMOJIS['stop']} Bot finished",
+            description=f"```\n{full_text[-MAX_CONSOLE_OUTPUT_LENGTH:]}\n```",
+            color=EMBED_COLORS['warning']
+        )
+        try:
+            await msg.edit(embed=final_embed, view=None)
+        except Exception:
+            pass
+        return full_text, msg
+    except Exception as e:
+        logger.error(f"Error running generated bot: {str(e)}", exc_info=True)
+        return "", None
+
+
+@bot.tree.command(name="develop", description="🛠️ Generate and run a Discord bot with AI")
+@app_commands.describe(prompt="Describe the bot you want to build")
+async def develop_command(interaction: discord.Interaction, prompt: str):
+    """Generate bot code via AI, install, run, and auto-fix errors."""
+    user_id = interaction.user.id
+    await interaction.response.defer(thinking=True, ephemeral=False)
+
+    # Ensure capacity
+    if session_manager.get_running_bots_count_for_user(user_id) >= MAX_BOTS_PER_USER:
+        await interaction.followup.send(
+            f"❌ You already have `{MAX_BOTS_PER_USER}` bots running. Stop one before using /develop.",
+            ephemeral=True
+        )
+        return
+
+    # Reserve slot and directory
+    success, error, slot, project_dir = session_manager.start_upload_session(user_id, "develop")
+    if not success or slot is None or project_dir is None:
+        await interaction.followup.send(f"❌ {error or 'Cannot start a develop session right now.'}", ephemeral=True)
+        return
+
+    progress_embed = discord.Embed(
+        title=f"{EMOJIS['rocket']} Creating your bot",
+        description=f"Slot: `{slot}`\nPrompt: `{prompt}`\n\n{EMOJIS['loading']} Generating files...",
+        color=EMBED_COLORS['info']
+    )
+    progress_msg = await interaction.followup.send(embed=progress_embed)
+
+    # Generate files with AI
+    gen_ok, gen_err, files, model_used = await generate_files_from_prompt(prompt)
+    if not gen_ok or not files:
+        err_embed = discord.Embed(
+            title=f"{EMOJIS['danger']} Generation Failed",
+            description=f"Error: `{gen_err}`",
+            color=EMBED_COLORS['error']
+        )
+        await progress_msg.edit(embed=err_embed)
+        session_manager.end_upload_session(user_id)
+        return
+
+    file_names = [f.get("file_name") for f in files if f.get("file_name")]
+    status_lines = [f"{EMOJIS['loading']} `{name}`" for name in file_names]
+    progress_embed.description = (
+        f"Slot: `{slot}`\nModel: `{model_used}`\n\n" +
+        "\n".join(status_lines)
+    )
+    await progress_msg.edit(embed=progress_embed)
+
+    # Write files
+    written, write_errors = write_files_to_directory(project_dir, files)
+    status_lines = [f"{EMOJIS['safe']} `{name}`" for name in written]
+    if write_errors:
+        status_lines += [f"{EMOJIS['danger']} {err}" for err in write_errors]
+    progress_embed.description = "\n".join(status_lines) or "No files written."
+    progress_embed.title = f"{EMOJIS['safe']} Files Generated"
+    await progress_msg.edit(embed=progress_embed)
+
+    # Offer .env fill if present
+    env_path = project_dir / ".env"
+    if env_path.exists():
+        keys = parse_env_keys(env_path)
+        env_embed = discord.Embed(
+            title=f"{EMOJIS['warning']} Fill your .env",
+            description="Please fill required environment values before running (optional).",
+            color=EMBED_COLORS['warning']
+        )
+        env_view = EnvFillView(env_path, keys) if keys else EnvFillView(env_path, [])
+        await interaction.followup.send(embed=env_embed, view=env_view, ephemeral=True)
+
+    # Install requirements
+    req_path = find_requirements_path(project_dir)
+    if req_path:
+        ok, pip_log = install_requirements(req_path, project_dir)
+        req_embed = discord.Embed(
+            title=f"{EMOJIS['safe'] if ok else EMOJIS['warning']} Dependencies",
+            description="Installed requirements." if ok else f"Installation issues:\n```\n{pip_log[:900]}\n```",
+            color=EMBED_COLORS['success'] if ok else EMBED_COLORS['warning']
+        )
+        await interaction.followup.send(embed=req_embed, ephemeral=True)
+    else:
+        await interaction.followup.send(
+            f"{EMOJIS['warning']} No requirements.txt found. Skipping installation.",
+            ephemeral=True
+        )
+
+    # End upload session so user can initiate another if needed
+    session_manager.end_upload_session(user_id)
+
+    # Run bot with auto-fix loop (max 2 attempts)
+    main_file = project_dir / "main.py"
+    attempts = 0
+    files_state = files
+    last_output = ""
+    while attempts < 2:
+        last_output, run_message = await run_generated_bot(interaction.channel, user_id, slot, project_dir, main_file)
+        await refresh_presence()
+
+        # Evaluate output
+        is_error = await check_console_output_for_error(last_output)
+        # region agent log
+        _agent_debug_log(
+            "HYP_D",
+            "bot.py:develop_command:error_check",
+            "Evaluated console output for error",
+            {"attempt": attempts, "is_error": is_error},
+        )
+        # endregion
+        if not is_error:
+            break
+
+        # Request fixes
+        fix_ok, fix_err, fixed_files = await request_error_fix(files_state, last_output)
+        if not fix_ok:
+            warn_embed = discord.Embed(
+                title=f"{EMOJIS['danger']} Auto-fix failed",
+                description=fix_err or "Could not generate fixes.",
+                color=EMBED_COLORS['error']
+            )
+            await interaction.followup.send(embed=warn_embed, ephemeral=True)
+            break
+
+        if fixed_files:
+            write_files_to_directory(project_dir, fixed_files)
+            files_state = fixed_files
+            # Reinstall requirements in case they changed
+            req_path = find_requirements_path(project_dir)
+            if req_path:
+                install_requirements(req_path, project_dir)
+            attempts += 1
+            continue
+        else:
+            # Only statement provided
+            info_embed = discord.Embed(
+                title=f"{EMOJIS['warning']} Auto-fix hint",
+                description=fix_err or "Check your configuration values.",
+                color=EMBED_COLORS['warning']
+            )
+            await interaction.followup.send(embed=info_embed, ephemeral=True)
+            break
 
 
 
@@ -1234,6 +1905,8 @@ async def main():
     """Entry point to start status server and Discord bot concurrently."""
     status_port = None
     try:
+        global http_client
+        http_client = aiohttp.ClientSession()
         status_port = await status_server.start()
         if status_server.display_url:
             logger.info(f"Status dashboard available at {status_server.display_url}")
@@ -1262,7 +1935,8 @@ async def main():
         except Exception as e:
             logger.warning(f"Error stopping status server: {str(e)}", exc_info=True)
         try:
-            await http_client.close()
+            if http_client:
+                await http_client.close()
         except Exception as e:
             logger.warning(f"Error closing HTTP client: {str(e)}", exc_info=True)
         if not bot.is_closed():
